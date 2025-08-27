@@ -1,463 +1,507 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MadHouse Luxury Spaces</title>
-  <!-- Google Fonts for premium typography -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --primary: #ff6a00; /* Tikera / MadHouse orange */
-      --dark: #0f0f0f;   /* Deep black background */
-      --light: #f7f7f7;  /* Light text and backgrounds */
-      --gold: #d4af37;   /* Luxury gold accent */
-    }
+import React, { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { Mail, Phone, Clock } from "lucide-react";
 
-    /* Base resets */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background-color: var(--dark);
-      color: var(--light);
-      line-height: 1.6;
-      overflow-x: hidden;
-    }
-    h1, h2, h3 {
-      font-family: 'Playfair Display', serif;
-      letter-spacing: 0.5px;
-    }
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-    section {
-      padding: 80px 20px;
-    }
+// =============================================
+// MadHouse Space Rental – Luxury Scroll Website
+// Fixes:
+// - Safe handling for empty image URLs (no more `url()` issues)
+// - Completed DATA array (all 9 spaces)
+// - Added smoke tests (won't alter runtime UI)
+// =============================================
 
-    /* Hero section */
-    .hero {
-      position: relative;
-      height: 100vh;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-    .hero::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(2px);
-    }
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      max-width: 900px;
-    }
-    .hero h1 {
-      font-size: 3rem;
-      margin-bottom: 20px;
-    }
-    .hero p {
-      font-size: 1.1rem;
-      margin-bottom: 40px;
-      color: #ddd;
-    }
-    .btn {
-      display: inline-block;
-      padding: 12px 30px;
-      border-radius: 30px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-    .btn-primary {
-      background: var(--primary);
-      color: var(--light);
-      box-shadow: 0 0 20px rgba(255, 106, 0, 0.5);
-    }
-    .btn-primary:hover {
-      box-shadow: 0 0 40px rgba(255, 106, 0, 0.8);
-      transform: translateY(-3px);
-    }
-    .btn-outline {
-      border: 2px solid var(--primary);
-      color: var(--primary);
-    }
-    .btn-outline:hover {
-      background: var(--primary);
-      color: var(--light);
-      box-shadow: 0 0 20px rgba(255, 106, 0, 0.5);
-    }
+const ORANGE = "#ff6a00";
 
-    /* Info section */
-    .info {
-      background: #141414;
-      border-top: 1px solid #222;
-    }
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 40px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .info-item {
-      background: #1c1c1c;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-      border: 1px solid #333;
-      position: relative;
-    }
-    .info-item h3 {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-      color: var(--gold);
-    }
-    .info-item p {
-      font-size: 0.9rem;
-      color: #ccc;
-    }
+const IMAGES = {
+  hero: "https://drive.google.com/uc?export=view&id=1LdcqZ2j_j_MkVnULO-YaO7bd2nUx49rT",
+  booking: "", // optional background; falls back to gradient when empty
+  gallery: "https://drive.google.com/uc?export=view&id=1yKskQqzaYiT9tGx5c3nbgAiHh4bbzT78",
+  photoStudio: "https://drive.google.com/uc?export=view&id=1Qk3Lc9GU82NX0D806bwrTXxrzfRa5Krl",
+  meetingRoom: "https://drive.google.com/uc?export=view&id=1X6-uWm9KWK3WsbR0b2EZmn_e6QqmuWL5",
+  amphitheatre: "https://drive.google.com/uc?export=view&id=1tfzl2Ico04mcbIc56foSnZoZiPR-h7qX",
+  artStudio: "https://drive.google.com/uc?export=view&id=1EOtUoMErCFcJ7J0GFFWwuWvFsQlFK6Zg",
+  gameRoom: "https://drive.google.com/uc?export=view&id=162Ul5OyQmYbUbAr07hVMqi0SDzV5vjAx",
+  makersStudio: "https://drive.google.com/uc?export=view&id=1HK-oWdfYjkUAfRBcuv2L8glTgttWArTw",
+  terrace: "https://drive.google.com/uc?export=view&id=1p-IMurIfS0r-IuZY8vKc3PaOSjGp0RgA",
+  greenRoom: "https://drive.google.com/uc?export=view&id=12WWRtB8M6D1OSu--wEeoixJdentCI00F",
+  closing: "", // empty is OK now; we use a gradient fallback automatically
+} as const;
 
-    /* Space sections */
-    .space-section {
-      background: #111;
-      border-top: 1px solid #222;
-    }
-    .space-card {
-      display: flex;
-      flex-direction: column;
-      background: #1a1a1a;
-      margin-bottom: 60px;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    }
-    .space-card:nth-child(even) {
-      flex-direction: column-reverse;
-    }
-    .space-image {
-      position: relative;
-      width: 100%;
-      height: 300px;
-      background-size: cover;
-      background-position: center;
-    }
-    .space-image::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%);
-    }
-    .space-content {
-      padding: 30px;
-    }
-    .space-content h2 {
-      font-size: 1.8rem;
-      margin-bottom: 10px;
-    }
-    .space-content .details {
-      font-size: 0.9rem;
-      color: #aaa;
-      margin-bottom: 15px;
-    }
-    .space-content ul {
-      margin-bottom: 20px;
-    }
-    .space-content ul li {
-      list-style: none;
-      position: relative;
-      padding-left: 20px;
-      margin-bottom: 8px;
-    }
-    .space-content ul li::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 6px;
-      width: 8px;
-      height: 8px;
-      background: var(--primary);
-      border-radius: 50%;
-    }
-    .space-content .price {
-      font-weight: 600;
-      color: var(--gold);
-      margin-bottom: 15px;
-    }
-    .space-content .btn-book {
-      display: inline-block;
-      padding: 10px 25px;
-      background: var(--primary);
-      color: var(--light);
-      border-radius: 25px;
-      font-size: 0.9rem;
-      transition: box-shadow 0.3s ease, transform 0.3s ease;
-    }
-    .space-content .btn-book:hover {
-      box-shadow: 0 0 25px rgba(255, 106, 0, 0.7);
-      transform: translateY(-2px);
-    }
+const CONTACT = {
+  email: "spaces@tikeraafrica.org",
+  phone: "+234 810 557 0023",
+  hours: "9 AM – 6 PM",
+} as const;
 
-    /* Footer */
-    footer {
-      background: #0d0d0d;
-      color: #888;
-      padding: 40px 20px;
-      text-align: center;
-      border-top: 1px solid #222;
-    }
-    footer p {
-      margin-bottom: 8px;
-      font-size: 0.9rem;
-    }
-    footer a {
-      color: var(--primary);
-      font-weight: 500;
-    }
-    .back-to-top {
-      position: fixed;
-      bottom: 40px;
-      right: 40px;
-      background: var(--primary);
-      color: var(--light);
-      padding: 12px 16px;
-      border-radius: 50%;
-      box-shadow: 0 0 20px rgba(255, 106, 0, 0.7);
-      cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .back-to-top:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 0 35px rgba(255, 106, 0, 0.9);
-    }
+// Helper: only apply backgroundImage when we actually have a URL
+const getBgStyle = (image?: string): React.CSSProperties =>
+  image && image.trim() !== "" ? ({ backgroundImage: `url(${image})` }) : ({});
 
-    /* Responsive adjustments */
-    @media (min-width: 768px) {
-      .hero h1 {
-        font-size: 4.2rem;
-      }
-      .hero p {
-        font-size: 1.25rem;
-      }
-      .space-card {
-        flex-direction: row;
-      }
-      .space-card:nth-child(even) {
-        flex-direction: row-reverse;
-      }
-      .space-image {
-        width: 50%;
-        height: 400px;
-      }
-      .space-content {
-        width: 50%;
-      }
-    }
-  </style>
-</head>
-<body>
-  <!-- Back to top button -->
-  <div class="back-to-top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">
-    ↑
-  </div>
+function ParallaxSection({
+  id,
+  image,
+  children,
+  darkOverlay = true,
+}: {
+  id: string;
+  image?: string;
+  children: React.ReactNode;
+  darkOverlay?: boolean;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
+  const hasImage = Boolean(image && image.trim() !== "");
 
-  <!-- Hero Section -->
-  <section class="hero" id="hero" style="background-image: url('https://images.unsplash.com/photo-1519710881301-4bca3090bd47?auto=format&fit=crop&w=1600&q=80');">
-    <div class="hero-content">
-      <h1>MadHouse Luxury Spaces</h1>
-      <p>Your destination for premium creative venues</p>
-      <a href="#info" class="btn btn-primary">Discover More</a>
-    </div>
-  </section>
+  return (
+    <section id={id} ref={ref} className="relative min-h-screen w-full overflow-hidden bg-black text-white">
+      {/* Background */}
+      {hasImage ? (
+        <motion.div
+          style={{ y, ...getBgStyle(image) }}
+          className="absolute inset-0 bg-cover bg-center will-change-transform"
+        />
+      ) : (
+        <motion.div
+          style={{ y }}
+          className="absolute inset-0 will-change-transform bg-gradient-to-b from-zinc-900 to-black"
+        />
+      )}
 
-  <!-- Booking / Info Section -->
-  <section class="info" id="info">
-    <h2 style="text-align:center; margin-bottom:40px; font-size:2.2rem; color: var(--gold);">Booking Information</h2>
-    <div class="info-grid">
-      <div class="info-item">
-        <h3>Operating Hours</h3>
-        <p>Our spaces are available by reservation. Please consult the rental guide for exact operating hours and session times.</p>
+      {/* Overlay */}
+      <div
+        className={`absolute inset-0 ${darkOverlay ? "bg-black/65" : "bg-black/40"}`}
+        style={{
+          background: darkOverlay
+            ? "linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.65) 40%, rgba(0,0,0,0.6) 100%)"
+            : undefined,
+        }}
+      />
+
+      {/* Content */}
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-center px-6 py-20">
+        {children}
       </div>
-      <div class="info-item">
-        <h3>Booking Policy</h3>
-        <p>A deposit is required to confirm your booking. VAT and other applicable fees may apply. Weekends and after-hours bookings may incur surcharges.</p>
-      </div>
-      <div class="info-item">
-        <h3>Contact Details</h3>
-        <p>For reservations and enquiries, please email <a href="mailto:events@madhouse.ng">events@madhouse.ng</a> or reach us via WhatsApp.</p>
-      </div>
-    </div>
-  </section>
+    </section>
+  );
+}
 
-  <!-- Spaces Section: Each card uses the provided remote image links -->
-  <section class="space-section" id="spaces">
-    <h2 style="text-align:center; margin-bottom:60px; font-size:2.2rem; color: var(--gold);">Our Spaces</h2>
-
-    <!-- Gallery -->
-    <div class="space-card">
-      <div class="space-image" style="background-image: url('https://drive.google.com/uc?export=view&id=1yKskQqzaYiT9tGx5c3nbgAiHh4bbzT78');"></div>
-      <div class="space-content">
-        <h2>Gallery</h2>
-        <div class="details">Suitable for art exhibitions, launches and special events.</div>
-        <ul>
-          <li>Spacious hall</li>
-          <li>Flexible layout</li>
-          <li>Contemporary ambience</li>
+function GlowCard({ title, items, note, compact = false }: { title?: string; items?: string[]; note?: string; compact?: boolean; }) {
+  return (
+    <div
+      className="group rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-all duration-300 hover:border-[var(--orange)]/60 hover:shadow-[0_0_24px_rgba(255,106,0,0.35)]"
+      // @ts-ignore – allow CSS var inline
+      style={{ ['--orange']: ORANGE }}
+    >
+      {title && <h4 className="mb-4 text-lg font-semibold tracking-wide text-white">{title}</h4>}
+      {Array.isArray(items) && (
+        <ul className={`space-y-2 text-sm text-white/80 ${compact ? "leading-relaxed" : "leading-7"}`}>
+          {items.map((it, i) => (
+            <li key={i} className="pl-4">• {it}</li>
+          ))}
         </ul>
-        <div class="price">Pricing: Refer to the rental guide</div>
-        <a href="#booking" class="btn-book">Book Now</a>
-      </div>
+      )}
+      {note && <p className="mt-3 text-xs text-white/60">{note}</p>}
     </div>
+  );
+}
 
-    <!-- Photography Studio -->
-    <div class="space-card">
-      <div class="space-image" style="background-image: url('https://drive.google.com/uc?export=view&id=1LjP6-gjfxZx9Ap89bJhKYWCCm9-ziwmX');"></div>
-      <div class="space-content">
-        <h2>Photography Studio</h2>
-        <div class="details">Equipped for professional photo and video shoots.</div>
-        <ul>
-          <li>Lighting equipment</li>
-          <li>Backdrops available</li>
-          <li>Makeup area</li>
-        </ul>
-        <div class="price">Pricing: Refer to the rental guide</div>
-        <a href="#booking" class="btn-book">Book Now</a>
-      </div>
+function RatePill({ children }: { children: React.ReactNode; }) {
+  return (
+    <div
+      className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/90 shadow-[0_0_0_rgba(0,0,0,0)] transition-all hover:border-[var(--orange)]/60 hover:shadow-[0_0_24px_rgba(255,106,0,0.35)]"
+      // @ts-ignore – allow CSS var inline
+      style={{ ['--orange']: ORANGE }}
+    >
+      <span className="h-2 w-2 rounded-full" style={{ backgroundColor: ORANGE }} />
+      <span>{children}</span>
     </div>
+  );
+}
 
-    <!-- Amphitheatre -->
-    <div class="space-card">
-      <div class="space-image" style="background-image: url('https://drive.google.com/uc?export=view&id=1tfzl2Ico04mcbIc56foSnZoZiPR-h7qX');"></div>
-      <div class="space-content">
-        <h2>Amphitheatre</h2>
-        <div class="details">An open-air amphitheatre ideal for performances and screenings.</div>
-        <ul>
-          <li>Tiered seating</li>
-          <li>Open-air ambience</li>
-          <li>Excellent acoustics</li>
-        </ul>
-        <div class="price">Pricing: Refer to the rental guide</div>
-        <a href="#booking" class="btn-book">Book Now</a>
-      </div>
+function SectionHeader({ kicker, title, subtitle }: { kicker?: string; title: string; subtitle?: string; }) {
+  return (
+    <div className="mb-8 text-center">
+      {kicker && (
+        <div className="mb-3 text-xs uppercase tracking-[0.25em] text-white/60">{kicker}</div>
+      )}
+      <h2 className="mb-3 text-4xl font-bold tracking-tight text-white md:text-5xl">{title}</h2>
+      {subtitle && <p className="mx-auto max-w-3xl text-white/70">{subtitle}</p>}
     </div>
+  );
+}
 
-    <!-- Art Studio -->
-    <div class="space-card">
-      <div class="space-image" style="background-image: url('https://drive.google.com/uc?export=view&id=1EOtUoMErCFcJ7J0GFFWwuWvFsQlFK6Zg');"></div>
-      <div class="space-content">
-        <h2>Art Studio</h2>
-        <div class="details">A creative studio space designed for artists and workshops.</div>
-        <ul>
-          <li>Natural light</li>
-          <li>Open workspace</li>
-          <li>Creative atmosphere</li>
-        </ul>
-        <div class="price">Pricing: Refer to the rental guide</div>
-        <a href="#booking" class="btn-book">Book Now</a>
-      </div>
+function TwoCol({ left, right }: { left: React.ReactNode; right: React.ReactNode; }) {
+  return (
+    <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
+      <div>{left}</div>
+      <div>{right}</div>
     </div>
+  );
+}
 
-    <!-- Game Room -->
-    <div class="space-card">
-      <div class="space-image" style="background-image: url('https://drive.google.com/uc?export=view&id=162Ul5OyQmYbUbAr07hVMqi0SDzV5vjAx');"></div>
-      <div class="space-content">
-        <h2>Game Room</h2>
-        <div class="details">A fun space for interactive entertainment and relaxation.</div>
-        <ul>
-          <li>Gaming consoles</li>
-          <li>Comfortable seating</li>
-          <li>Chill-out area</li>
-        </ul>
-        <div class="price">Pricing: Refer to the rental guide</div>
-        <a href="#booking" class="btn-book">Book Now</a>
+function Hero() {
+  return (
+    <ParallaxSection id="hero" image={IMAGES.hero}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+        className="text-center"
+      >
+        <div className="mx-auto mb-6 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white/80">
+          <Clock className="h-4 w-4" />
+          <span>Opening Hours: {CONTACT.hours}</span>
+        </div>
+        <h1 className="mx-auto max-w-5xl text-5xl font-extrabold leading-tight text-white md:text-6xl">
+          MadHouse Space Rental
+        </h1>
+        <p className="mx-auto mt-4 max-w-2xl text-white/75">
+          Spaces for art, ideas, and bold gatherings.
+        </p>
+        <div className="mt-10 flex items-center justify-center gap-4">
+          <a
+            href="#booking"
+            className="rounded-xl border border-white/10 bg-white/10 px-6 py-3 text-sm font-medium text-white backdrop-blur-sm transition-all hover:border-[var(--orange)]/60 hover:text-white hover:shadow-[0_0_24px_rgba(255,106,0,0.35)]"
+            // @ts-ignore – allow CSS var inline
+            style={{ ['--orange']: ORANGE }}
+          >
+            Booking Policy
+          </a>
+          <a
+            href="#contact"
+            className="rounded-xl border border-white/10 bg-[var(--orange)] px-6 py-3 text-sm font-semibold text-black transition-all hover:shadow-[0_0_24px_rgba(255,106,0,0.45)]"
+            // @ts-ignore – allow CSS var inline
+            style={{ ['--orange']: ORANGE }}
+          >
+            Contact
+          </a>
+        </div>
+      </motion.div>
+    </ParallaxSection>
+  );
+}
+
+function Booking() {
+  return (
+    <ParallaxSection id="booking" image={IMAGES.booking}>
+      <SectionHeader kicker="Policy" title="Booking Policy & Information" />
+      <div className="mx-auto max-w-4xl space-y-4 text-white/85">
+        <GlowCard
+          items={[
+            "A deposit of 50% is required to secure your booking; the balance is due 5 days before the event.",
+            "All prices are fixed and exclusive of VAT.",
+            "Weekend events attract a 20% surcharge on the full rental value of the space being used.",
+            "A 30% charge during holidays.",
+            "A 20% caution fee will be added to the space rental.",
+            `To book any of our spaces, email or call us.`,
+          ]}
+        />
       </div>
-    </div>
+    </ParallaxSection>
+  );
+}
 
-    <!-- Makers Studio -->
-    <div class="space-card">
-      <div class="space-image" style="background-image: url('https://drive.google.com/uc?export=view&id=1HK-oWdfYjkUAfRBcuv2L8glTgttWArTw');"></div>
-      <div class="space-content">
-        <h2>Makers Studio</h2>
-        <div class="details">A versatile workshop space for creators and makers.</div>
-        <ul>
-          <li>Workbench facilities</li>
-          <li>Equipment on request</li>
-          <li>Collaborative environment</li>
-        </ul>
-        <div class="price">Pricing: Refer to the rental guide</div>
-        <a href="#booking" class="btn-book">Book Now</a>
+function SpaceSection({ id, title, image, uses, features, rates, note }: { id: string; title: string; image?: string; uses: string[]; features: string[]; rates: string[]; note?: string; }) {
+  return (
+    <ParallaxSection id={id} image={image}>
+      <SectionHeader kicker="Space" title={title} />
+      <TwoCol
+        left={<GlowCard title="Uses" items={uses} compact />}
+        right={
+          <div className="space-y-6">
+            <GlowCard title="Key Features" items={features} compact note={note} />
+            <div className="flex flex-wrap gap-3">
+              {rates.map((r, i) => (
+                <RatePill key={i}>{r}</RatePill>
+              ))}
+            </div>
+          </div>
+        }
+      />
+    </ParallaxSection>
+  );
+}
+
+function ClosingQuote() {
+  return (
+    <ParallaxSection id="closing" image={IMAGES.closing}>
+      <motion.blockquote
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="mx-auto max-w-4xl text-center text-2xl font-semibold text-white md:text-3xl"
+      >
+        “Every great story starts with the right setting, and we have the perfect one for yours.”
+      </motion.blockquote>
+    </ParallaxSection>
+  );
+}
+
+function Contact() {
+  return (
+    <ParallaxSection id="contact" image={IMAGES.hero} darkOverlay={false}>
+      <SectionHeader kicker="Get in touch" title="Contact" />
+      <div className="mx-auto max-w-xl space-y-4 text-white/90">
+        <a
+          href={`mailto:${CONTACT.email}`}
+          className="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-5 py-4 transition-all hover:border-[var(--orange)]/60 hover:shadow-[0_0_24px_rgba(255,106,0,0.35)]"
+          // @ts-ignore – allow CSS var inline
+          style={{ ['--orange']: ORANGE }}
+        >
+          <Mail className="h-5 w-5 text-white/80 transition-colors group-hover:text-white" />
+          <span>{CONTACT.email}</span>
+        </a>
+        <a
+          href={`tel:${CONTACT.phone.replace(/\s/g, "")}`}
+          className="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-5 py-4 transition-all hover:border-[var(--orange)]/60 hover:shadow-[0_0_24px_rgba(255,106,0,0.35)]"
+          // @ts-ignore – allow CSS var inline
+          style={{ ['--orange']: ORANGE }}
+        >
+          <Phone className="h-5 w-5 text-white/80 transition-colors group-hover:text-white" />
+          <span>{CONTACT.phone}</span>
+        </a>
+        <div className="flex items-center gap-3 text-white/70">
+          <Clock className="h-5 w-5" />
+          <span>Opening Hours: {CONTACT.hours}</span>
+        </div>
       </div>
-    </div>
+    </ParallaxSection>
+  );
+}
 
-    <!-- Terraces -->
-    <div class="space-card">
-      <div class="space-image" style="background-image: url('https://drive.google.com/uc?export=view&id=1p-IMurIfS0r-IuZY8vKc3PaOSjGp0RgA');"></div>
-      <div class="space-content">
-        <h2>Terrace</h2>
-        <div class="details">Outdoor terrace area perfect for receptions and gatherings.</div>
-        <ul>
-          <li>Scenic views</li>
-          <li>Flexible seating</li>
-          <li>Open-air ambience</li>
-        </ul>
-        <div class="price">Pricing: Refer to the rental guide</div>
-        <a href="#booking" class="btn-book">Book Now</a>
+const DATA = [
+  {
+    id: "gallery",
+    title: "Gallery",
+    image: IMAGES.gallery,
+    uses: ["Art exhibitions", "Pop-up shows", "Brand showcases", "Installations"],
+    features: [
+      "Capacity: Up to 100 people (conference seating)",
+      "Natural light, mood lighting",
+      "Sound system",
+      "Fully air-conditioned",
+      "Interactive display screens",
+    ],
+    rates: ["₦1,000,000 per day (events other than exhibitions)"],
+  },
+  {
+    id: "photography-studio",
+    title: "Photography Studio",
+    image: IMAGES.photoStudio,
+    uses: ["Photography sessions", "Video shoots", "Product shoots", "Content creation"],
+    features: [
+      "Spacious studio",
+      "2 strobe lights",
+      "Access to 1 backdrop",
+      "1 AD100 Pro light",
+      "Changing area",
+    ],
+    rates: [
+      "Video (Regular): Weekdays ₦30,000/hr, Weekends ₦35,000/hr",
+      "Video (Student): Weekdays ₦15,000/hr, Weekends ₦20,000/hr",
+      "Photo (Regular): Weekdays ₦15,000/hr, Weekends ₦20,000/hr",
+      "Photo (Student): Weekdays ₦10,000/hr, Weekends ₦15,000/hr",
+    ],
+    note: "In-house professional photographers are available on request.",
+  },
+  {
+    id: "meeting-room",
+    title: "Meeting Room",
+    image: IMAGES.meetingRoom,
+    uses: ["Meetings", "Presentations", "Team strategy sessions", "Interviews", "Workshops"],
+    features: [
+      "Capacity: Up to 30 people",
+      "Seating: 20 chairs with writing pads",
+      "TV screen, whiteboard",
+      "Internet-enabled panel, flip chart stand",
+      "Access to Terrace 1, lagoon view",
+    ],
+    rates: ["Weekdays: ₦350,000 per day"],
+  },
+  {
+    id: "amphitheatre",
+    title: "Amphitheatre",
+    image: IMAGES.amphitheatre,
+    uses: ["Performances", "Screenings", "Lectures", "Community events", "Panels"],
+    features: [
+      "Capacity: 100-seater",
+      "Sound system",
+      "Pod screens",
+      "Audiovisual equipment",
+      "Accessible seating",
+    ],
+    rates: ["₦600,000 per day", "₦100,000 per hour (minimum 2 hours)"],
+  },
+  {
+    id: "art-studio",
+    title: "Art Studio",
+    image: IMAGES.artStudio,
+    uses: ["Art classes", "Workshops", "Portfolio creation", "Group creative sessions"],
+    features: ["Adjustable easels", "Natural lighting", "Workstations", "Outdoor space"],
+    rates: ["Weekly: ₦60,000", "Monthly: ₦200,000"],
+  },
+  {
+    id: "game-room",
+    title: "Game Room",
+    image: IMAGES.gameRoom,
+    uses: ["Casual hangouts", "Team bonding", "Social events"],
+    features: [
+      "Capacity: Up to 20 people",
+      "Access to Terrace 1",
+      "Board games, card games",
+      "Comfortable seating",
+      "Interactive screens, meeting space",
+    ],
+    rates: ["Weekdays: ₦550,000 per day"],
+  },
+  {
+    id: "makers-studio",
+    title: "Makers Studio",
+    image: IMAGES.makersStudio,
+    uses: ["Prototyping", "DIY projects", "Product design", "Creative making"],
+    features: [
+      "Capacity: Up to 50 people",
+      "TV screen, whiteboard",
+      "Internet-enabled panel",
+      "Flip chart stand",
+      "Lagoon view",
+    ],
+    rates: ["Weekdays: ₦450,000 per day"],
+  },
+  {
+    id: "terrace",
+    title: "Terrace",
+    image: IMAGES.terrace,
+    uses: ["Outdoor events", "Cocktail parties", "Networking events", "Small concerts", "Open-air workshops"],
+    features: [
+      "Open-air layout",
+      "Ambient lighting",
+      "Lagoon view",
+      "Flexible seating",
+      "Cooling fans",
+    ],
+    rates: ["Terrace 1 (1st floor): ₦100,000 per day", "Terrace 2 (2nd floor): ₦150,000 per day"],
+  },
+  {
+    id: "green-room",
+    title: "Green Room",
+    image: IMAGES.greenRoom,
+    uses: ["VIP holding area", "Interviews", "Private makeup/dressing", "Talent waiting area"],
+    features: ["Capacity: Up to 20 people", "TV Screen or interactive screen panel"],
+    rates: ["Weekdays: ₦250,000 per day"],
+  },
+] as const;
+
+// =============================
+// Smoke Tests (console only)
+// =============================
+function runSmokeTests() {
+  try {
+    const expect = (cond: boolean, msg: string) => { if (!cond) console.error(`SMOKE TEST: ${msg}`); };
+
+    // DATA structure
+    expect(Array.isArray(DATA), "DATA should be an array");
+    expect(DATA.length === 9, "DATA should contain 9 sections");
+
+    // IMAGES keys
+    const reqKeys = ["hero","gallery","photoStudio","meetingRoom","amphitheatre","artStudio","gameRoom","makersStudio","terrace","greenRoom","closing"];
+    reqKeys.forEach(k => expect(Object.prototype.hasOwnProperty.call(IMAGES, k), `IMAGES missing key ${k}`));
+
+    // Validate entries
+    DATA.forEach((s, idx) => {
+      expect(typeof s.id === "string" && s.id.length > 0, `#${idx} missing id`);
+      expect(typeof s.title === "string" && s.title.length > 0, `#${idx} missing title`);
+      expect(typeof s.image === "string", `#${idx} image should be a string (URL or empty)`);
+      expect(Array.isArray(s.uses) && s.uses.length > 0, `#${idx} uses should be non-empty`);
+      expect(Array.isArray(s.features) && s.features.length > 0, `#${idx} features should be non-empty`);
+      expect(Array.isArray(s.rates) && s.rates.length > 0, `#${idx} rates should be non-empty`);
+    });
+
+    // Fallback image handling
+    const styleEmpty = getBgStyle("");
+    expect(!('backgroundImage' in styleEmpty), "getBgStyle('') should not set backgroundImage");
+
+    const styleHero = getBgStyle(IMAGES.hero);
+    expect('backgroundImage' in styleHero, "getBgStyle(hero) should set backgroundImage");
+
+    console.info("SMOKE TEST: completed");
+  } catch (e) {
+    console.error("SMOKE TEST: exception", e);
+  }
+}
+runSmokeTests();
+
+function TopNav() {
+  const links = [
+    { id: "hero", label: "Home" },
+    { id: "booking", label: "Booking" },
+    ...DATA.map((s) => ({ id: s.id, label: s.title })),
+    { id: "closing", label: "Quote" },
+    { id: "contact", label: "Contact" },
+  ];
+
+  return (
+    <div className="pointer-events-none fixed inset-x-0 top-0 z-40 mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+      <div className="pointer-events-auto rounded-full border border-white/10 bg-black/60 px-4 py-2 text-sm font-semibold text-white/90 backdrop-blur-md">
+        MADHOUSE
       </div>
+      <nav className="pointer-events-auto hidden items-center gap-2 rounded-full border border-white/10 bg-black/60 p-1 backdrop-blur-md md:flex">
+        {links.map((l) => (
+          <a
+            key={l.id}
+            href={`#${l.id}`}
+            className="rounded-full px-3 py-2 text-xs text-white/80 transition-all hover:text-white hover:shadow-[0_0_16px_rgba(255,106,0,0.35)]"
+            // @ts-ignore – allow CSS var inline
+            style={{ ['--orange']: ORANGE }}
+          >
+            {l.label}
+          </a>
+        ))}
+      </nav>
     </div>
-    <!-- Second Terrace / variation (optional) -->
-    <div class="space-card">
-      <div class="space-image" style="background-image: url('https://drive.google.com/uc?export=view&id=1jqfFhpik0KjyqsC3onUO7CW7uzN-qvhU');"></div>
-      <div class="space-content">
-        <h2>Terrace 2</h2>
-        <div class="details">A second terrace option with a slightly different ambiance.</div>
-        <ul>
-          <li>Alternate outlook</li>
-          <li>Versatile usage</li>
-          <li>Private corners</li>
-        </ul>
-        <div class="price">Pricing: Refer to the rental guide</div>
-        <a href="#booking" class="btn-book">Book Now</a>
-      </div>
+  );
+}
+
+export default function MadHouseSpaceRental() {
+  return (
+    <div className="scroll-smooth bg-black text-white">
+      <TopNav />
+      <Hero />
+      <Booking />
+
+      {DATA.map((s) => (
+        <SpaceSection
+          key={s.id}
+          id={s.id}
+          title={s.title}
+          image={s.image}
+          uses={s.uses}
+          features={s.features}
+          rates={s.rates}
+          note={s.note}
+        />
+      ))}
+
+      <ClosingQuote />
+      <Contact />
+
+      {/* Footer Bar */}
+      <footer className="sticky bottom-0 z-50 w-full bg-gradient-to-t from-black/80 to-black/0 p-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between rounded-2xl border border-white/10 bg-black/60 px-4 py-3 backdrop-blur">
+          <span className="text-xs text-white/60">© {new Date().getFullYear()} MadHouse</span>
+          <div className="flex items-center gap-2">
+            <a
+              href="#contact"
+              className="rounded-xl border border-white/10 bg-[var(--orange)] px-4 py-2 text-xs font-semibold text-black transition-all hover:shadow-[0_0_24px_rgba(255,106,0,0.45)]"
+              // @ts-ignore – allow CSS var inline
+              style={{ ['--orange']: ORANGE }}
+            >
+              Book a Space
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
-
-    <!-- Green Room -->
-    <div class="space-card">
-      <div class="space-image" style="background-image: url('https://drive.google.com/uc?export=view&id=12WWRtB8M6D1OSu--wEeoixJdentCI00F');"></div>
-      <div class="space-content">
-        <h2>Green Room</h2>
-        <div class="details">A relaxed lounge space for performers or guests.</div>
-        <ul>
-          <li>Comfortable seating</li>
-          <li>Private lounge</li>
-          <li>Refreshment facilities</li>
-        </ul>
-        <div class="price">Pricing: Refer to the rental guide</div>
-        <a href="#booking" class="btn-book">Book Now</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-    <p>© 2025 MadHouse Spaces. All rights reserved.</p>
-    <p><a href="mailto:events@madhouse.ng">events@madhouse.ng</a> | Lagos, Nigeria</p>
-  </footer>
-
-</body>
-</html>
+  );
+}
