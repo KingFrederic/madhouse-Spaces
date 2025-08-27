@@ -1,507 +1,416 @@
-import React, { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { Mail, Phone, Clock } from "lucide-react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MadHouse Space Rental</title>
+  <style>
+    :root {
+      --orange: #ff6a00;
+      --bg: #000;
+      --text: #fff;
+      --muted: rgba(255,255,255,0.7);
+      --muted2: rgba(255,255,255,0.55);
+      --card: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.12);
+    }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
 
-// =============================================
-// MadHouse Space Rental – Luxury Scroll Website
-// Fixes:
-// - Safe handling for empty image URLs (no more `url()` issues)
-// - Completed DATA array (all 9 spaces)
-// - Added smoke tests (won't alter runtime UI)
-// =============================================
+    /* Top nav */
+    .topnav { position: fixed; inset-inline: 0; top: 0; z-index: 40; display: flex; justify-content: center; pointer-events: none; }
+    .topnav-inner { width: min(1200px, 100%); display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px; }
+    .chip { pointer-events: auto; border: 1px solid var(--border); background: rgba(0,0,0,0.6); padding: 8px 14px; border-radius: 999px; font-weight: 700; font-size: 14px; backdrop-filter: blur(8px); }
+    .nav { pointer-events: auto; display: none; gap: 6px; border: 1px solid var(--border); background: rgba(0,0,0,0.6); padding: 6px; border-radius: 999px; backdrop-filter: blur(8px); }
+    @media (min-width: 768px) { .nav { display: flex; } }
+    .nav a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 12px; padding: 8px 10px; border-radius: 999px; transition: box-shadow .25s, color .25s, border-color .25s; }
+    .nav a:hover { color: #fff; box-shadow: 0 0 16px rgba(255,106,0,.35); }
 
-const ORANGE = "#ff6a00";
+    /* Sections */
+    .section { position: relative; min-height: 100svh; display: grid; place-items: center; overflow: hidden; }
+    .bg-layer { position: absolute; inset: 0; background-size: cover; background-position: center; transform: translateZ(0); will-change: transform; }
+    .overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.7) 0%, rgba(0,0,0,.65) 40%, rgba(0,0,0,.6) 100%); }
+    .content { position: relative; z-index: 10; width: min(1100px, 92%); margin-inline: auto; padding: 80px 0; }
 
-const IMAGES = {
-  hero: "https://drive.google.com/uc?export=view&id=1LdcqZ2j_j_MkVnULO-YaO7bd2nUx49rT",
-  booking: "", // optional background; falls back to gradient when empty
-  gallery: "https://drive.google.com/uc?export=view&id=1yKskQqzaYiT9tGx5c3nbgAiHh4bbzT78",
-  photoStudio: "https://drive.google.com/uc?export=view&id=1Qk3Lc9GU82NX0D806bwrTXxrzfRa5Krl",
-  meetingRoom: "https://drive.google.com/uc?export=view&id=1X6-uWm9KWK3WsbR0b2EZmn_e6QqmuWL5",
-  amphitheatre: "https://drive.google.com/uc?export=view&id=1tfzl2Ico04mcbIc56foSnZoZiPR-h7qX",
-  artStudio: "https://drive.google.com/uc?export=view&id=1EOtUoMErCFcJ7J0GFFWwuWvFsQlFK6Zg",
-  gameRoom: "https://drive.google.com/uc?export=view&id=162Ul5OyQmYbUbAr07hVMqi0SDzV5vjAx",
-  makersStudio: "https://drive.google.com/uc?export=view&id=1HK-oWdfYjkUAfRBcuv2L8glTgttWArTw",
-  terrace: "https://drive.google.com/uc?export=view&id=1p-IMurIfS0r-IuZY8vKc3PaOSjGp0RgA",
-  greenRoom: "https://drive.google.com/uc?export=view&id=12WWRtB8M6D1OSu--wEeoixJdentCI00F",
-  closing: "", // empty is OK now; we use a gradient fallback automatically
-} as const;
+    /* Hero */
+    .center { text-align: center; }
+    .title-xl { font-size: clamp(38px, 7vw, 64px); line-height: 1.08; font-weight: 900; margin: 0 0 12px; }
+    .lead { color: var(--muted); max-width: 720px; margin: 8px auto 0; }
+    .row { display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 28px; }
+    .btn, .btn-outline { border-radius: 16px; font-weight: 600; font-size: 14px; padding: 12px 18px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: box-shadow .3s, border-color .3s, transform .2s; }
+    .btn { background: var(--orange); color: #000; border: 1px solid transparent; }
+    .btn:hover { box-shadow: 0 0 24px rgba(255,106,0,.45); transform: translateY(-1px); }
+    .btn-outline { color: #fff; border: 1px solid var(--border); background: rgba(255,255,255,0.08); backdrop-filter: blur(6px); }
+    .btn-outline:hover { border-color: rgba(255,106,0,.6); box-shadow: 0 0 24px rgba(255,106,0,.35); transform: translateY(-1px); }
 
-const CONTACT = {
-  email: "spaces@tikeraafrica.org",
-  phone: "+234 810 557 0023",
-  hours: "9 AM – 6 PM",
-} as const;
+    /* Cards */
+    .grid-2 { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 900px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 20px; transition: box-shadow .3s, border-color .3s; backdrop-filter: blur(6px); }
+    .card:hover { box-shadow: 0 0 24px rgba(255,106,0,.35); border-color: rgba(255,106,0,.6); }
+    .card h4 { margin: 0 0 12px; font-size: 18px; }
+    .card ul { margin: 0; padding-left: 18px; color: rgba(255,255,255,0.82); line-height: 1.7; }
+    .note { margin-top: 8px; color: var(--muted2); font-size: 12px; }
 
-// Helper: only apply backgroundImage when we actually have a URL
-const getBgStyle = (image?: string): React.CSSProperties =>
-  image && image.trim() !== "" ? ({ backgroundImage: `url(${image})` }) : ({});
+    .rates { display: flex; flex-wrap: wrap; gap: 10px; }
+    .pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.15); font-size: 13px; color: rgba(255,255,255,.92); transition: box-shadow .3s, border-color .3s; }
+    .pill::before { content: ""; width: 8px; height: 8px; border-radius: 999px; background: var(--orange); display: inline-block; }
+    .pill:hover { border-color: rgba(255,106,0,.6); box-shadow: 0 0 24px rgba(255,106,0,.35); }
 
-function ParallaxSection({
-  id,
-  image,
-  children,
-  darkOverlay = true,
-}: {
-  id: string;
-  image?: string;
-  children: React.ReactNode;
-  darkOverlay?: boolean;
-}) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
-  const hasImage = Boolean(image && image.trim() !== "");
+    .kicker { text-transform: uppercase; letter-spacing: .25em; color: rgba(255,255,255,.6); font-size: 12px; margin-bottom: 8px; }
+    .h2 { font-size: clamp(28px, 4.5vw, 44px); margin: 0 0 12px; }
+    .sub { color: rgba(255,255,255,.7); }
 
-  return (
-    <section id={id} ref={ref} className="relative min-h-screen w-full overflow-hidden bg-black text-white">
-      {/* Background */}
-      {hasImage ? (
-        <motion.div
-          style={{ y, ...getBgStyle(image) }}
-          className="absolute inset-0 bg-cover bg-center will-change-transform"
-        />
-      ) : (
-        <motion.div
-          style={{ y }}
-          className="absolute inset-0 will-change-transform bg-gradient-to-b from-zinc-900 to-black"
-        />
-      )}
+    /* Quote */
+    blockquote { font-size: clamp(22px, 3.2vw, 32px); text-align: center; font-weight: 600; }
 
-      {/* Overlay */}
-      <div
-        className={`absolute inset-0 ${darkOverlay ? "bg-black/65" : "bg-black/40"}`}
-        style={{
-          background: darkOverlay
-            ? "linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.65) 40%, rgba(0,0,0,0.6) 100%)"
-            : undefined,
-        }}
-      />
+    /* Footer */
+    .footerbar { position: sticky; bottom: 0; z-index: 50; padding: 16px; background: linear-gradient(to top, rgba(0,0,0,.8), rgba(0,0,0,0)); }
+    .footer-inner { width: min(1200px, 100%); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); background: rgba(0,0,0,.6); border-radius: 20px; padding: 12px 16px; backdrop-filter: blur(8px); }
+    .muted { color: rgba(255,255,255,.6); font-size: 12px; }
 
-      {/* Content */}
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-center px-6 py-20">
-        {children}
-      </div>
-    </section>
-  );
-}
-
-function GlowCard({ title, items, note, compact = false }: { title?: string; items?: string[]; note?: string; compact?: boolean; }) {
-  return (
-    <div
-      className="group rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-all duration-300 hover:border-[var(--orange)]/60 hover:shadow-[0_0_24px_rgba(255,106,0,0.35)]"
-      // @ts-ignore – allow CSS var inline
-      style={{ ['--orange']: ORANGE }}
-    >
-      {title && <h4 className="mb-4 text-lg font-semibold tracking-wide text-white">{title}</h4>}
-      {Array.isArray(items) && (
-        <ul className={`space-y-2 text-sm text-white/80 ${compact ? "leading-relaxed" : "leading-7"}`}>
-          {items.map((it, i) => (
-            <li key={i} className="pl-4">• {it}</li>
-          ))}
-        </ul>
-      )}
-      {note && <p className="mt-3 text-xs text-white/60">{note}</p>}
-    </div>
-  );
-}
-
-function RatePill({ children }: { children: React.ReactNode; }) {
-  return (
-    <div
-      className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/90 shadow-[0_0_0_rgba(0,0,0,0)] transition-all hover:border-[var(--orange)]/60 hover:shadow-[0_0_24px_rgba(255,106,0,0.35)]"
-      // @ts-ignore – allow CSS var inline
-      style={{ ['--orange']: ORANGE }}
-    >
-      <span className="h-2 w-2 rounded-full" style={{ backgroundColor: ORANGE }} />
-      <span>{children}</span>
-    </div>
-  );
-}
-
-function SectionHeader({ kicker, title, subtitle }: { kicker?: string; title: string; subtitle?: string; }) {
-  return (
-    <div className="mb-8 text-center">
-      {kicker && (
-        <div className="mb-3 text-xs uppercase tracking-[0.25em] text-white/60">{kicker}</div>
-      )}
-      <h2 className="mb-3 text-4xl font-bold tracking-tight text-white md:text-5xl">{title}</h2>
-      {subtitle && <p className="mx-auto max-w-3xl text-white/70">{subtitle}</p>}
-    </div>
-  );
-}
-
-function TwoCol({ left, right }: { left: React.ReactNode; right: React.ReactNode; }) {
-  return (
-    <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">
-      <div>{left}</div>
-      <div>{right}</div>
-    </div>
-  );
-}
-
-function Hero() {
-  return (
-    <ParallaxSection id="hero" image={IMAGES.hero}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-        className="text-center"
-      >
-        <div className="mx-auto mb-6 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white/80">
-          <Clock className="h-4 w-4" />
-          <span>Opening Hours: {CONTACT.hours}</span>
-        </div>
-        <h1 className="mx-auto max-w-5xl text-5xl font-extrabold leading-tight text-white md:text-6xl">
-          MadHouse Space Rental
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-white/75">
-          Spaces for art, ideas, and bold gatherings.
-        </p>
-        <div className="mt-10 flex items-center justify-center gap-4">
-          <a
-            href="#booking"
-            className="rounded-xl border border-white/10 bg-white/10 px-6 py-3 text-sm font-medium text-white backdrop-blur-sm transition-all hover:border-[var(--orange)]/60 hover:text-white hover:shadow-[0_0_24px_rgba(255,106,0,0.35)]"
-            // @ts-ignore – allow CSS var inline
-            style={{ ['--orange']: ORANGE }}
-          >
-            Booking Policy
-          </a>
-          <a
-            href="#contact"
-            className="rounded-xl border border-white/10 bg-[var(--orange)] px-6 py-3 text-sm font-semibold text-black transition-all hover:shadow-[0_0_24px_rgba(255,106,0,0.45)]"
-            // @ts-ignore – allow CSS var inline
-            style={{ ['--orange']: ORANGE }}
-          >
-            Contact
-          </a>
-        </div>
-      </motion.div>
-    </ParallaxSection>
-  );
-}
-
-function Booking() {
-  return (
-    <ParallaxSection id="booking" image={IMAGES.booking}>
-      <SectionHeader kicker="Policy" title="Booking Policy & Information" />
-      <div className="mx-auto max-w-4xl space-y-4 text-white/85">
-        <GlowCard
-          items={[
-            "A deposit of 50% is required to secure your booking; the balance is due 5 days before the event.",
-            "All prices are fixed and exclusive of VAT.",
-            "Weekend events attract a 20% surcharge on the full rental value of the space being used.",
-            "A 30% charge during holidays.",
-            "A 20% caution fee will be added to the space rental.",
-            `To book any of our spaces, email or call us.`,
-          ]}
-        />
-      </div>
-    </ParallaxSection>
-  );
-}
-
-function SpaceSection({ id, title, image, uses, features, rates, note }: { id: string; title: string; image?: string; uses: string[]; features: string[]; rates: string[]; note?: string; }) {
-  return (
-    <ParallaxSection id={id} image={image}>
-      <SectionHeader kicker="Space" title={title} />
-      <TwoCol
-        left={<GlowCard title="Uses" items={uses} compact />}
-        right={
-          <div className="space-y-6">
-            <GlowCard title="Key Features" items={features} compact note={note} />
-            <div className="flex flex-wrap gap-3">
-              {rates.map((r, i) => (
-                <RatePill key={i}>{r}</RatePill>
-              ))}
-            </div>
-          </div>
-        }
-      />
-    </ParallaxSection>
-  );
-}
-
-function ClosingQuote() {
-  return (
-    <ParallaxSection id="closing" image={IMAGES.closing}>
-      <motion.blockquote
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="mx-auto max-w-4xl text-center text-2xl font-semibold text-white md:text-3xl"
-      >
-        “Every great story starts with the right setting, and we have the perfect one for yours.”
-      </motion.blockquote>
-    </ParallaxSection>
-  );
-}
-
-function Contact() {
-  return (
-    <ParallaxSection id="contact" image={IMAGES.hero} darkOverlay={false}>
-      <SectionHeader kicker="Get in touch" title="Contact" />
-      <div className="mx-auto max-w-xl space-y-4 text-white/90">
-        <a
-          href={`mailto:${CONTACT.email}`}
-          className="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-5 py-4 transition-all hover:border-[var(--orange)]/60 hover:shadow-[0_0_24px_rgba(255,106,0,0.35)]"
-          // @ts-ignore – allow CSS var inline
-          style={{ ['--orange']: ORANGE }}
-        >
-          <Mail className="h-5 w-5 text-white/80 transition-colors group-hover:text-white" />
-          <span>{CONTACT.email}</span>
-        </a>
-        <a
-          href={`tel:${CONTACT.phone.replace(/\s/g, "")}`}
-          className="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-5 py-4 transition-all hover:border-[var(--orange)]/60 hover:shadow-[0_0_24px_rgba(255,106,0,0.35)]"
-          // @ts-ignore – allow CSS var inline
-          style={{ ['--orange']: ORANGE }}
-        >
-          <Phone className="h-5 w-5 text-white/80 transition-colors group-hover:text-white" />
-          <span>{CONTACT.phone}</span>
-        </a>
-        <div className="flex items-center gap-3 text-white/70">
-          <Clock className="h-5 w-5" />
-          <span>Opening Hours: {CONTACT.hours}</span>
-        </div>
-      </div>
-    </ParallaxSection>
-  );
-}
-
-const DATA = [
-  {
-    id: "gallery",
-    title: "Gallery",
-    image: IMAGES.gallery,
-    uses: ["Art exhibitions", "Pop-up shows", "Brand showcases", "Installations"],
-    features: [
-      "Capacity: Up to 100 people (conference seating)",
-      "Natural light, mood lighting",
-      "Sound system",
-      "Fully air-conditioned",
-      "Interactive display screens",
-    ],
-    rates: ["₦1,000,000 per day (events other than exhibitions)"],
-  },
-  {
-    id: "photography-studio",
-    title: "Photography Studio",
-    image: IMAGES.photoStudio,
-    uses: ["Photography sessions", "Video shoots", "Product shoots", "Content creation"],
-    features: [
-      "Spacious studio",
-      "2 strobe lights",
-      "Access to 1 backdrop",
-      "1 AD100 Pro light",
-      "Changing area",
-    ],
-    rates: [
-      "Video (Regular): Weekdays ₦30,000/hr, Weekends ₦35,000/hr",
-      "Video (Student): Weekdays ₦15,000/hr, Weekends ₦20,000/hr",
-      "Photo (Regular): Weekdays ₦15,000/hr, Weekends ₦20,000/hr",
-      "Photo (Student): Weekdays ₦10,000/hr, Weekends ₦15,000/hr",
-    ],
-    note: "In-house professional photographers are available on request.",
-  },
-  {
-    id: "meeting-room",
-    title: "Meeting Room",
-    image: IMAGES.meetingRoom,
-    uses: ["Meetings", "Presentations", "Team strategy sessions", "Interviews", "Workshops"],
-    features: [
-      "Capacity: Up to 30 people",
-      "Seating: 20 chairs with writing pads",
-      "TV screen, whiteboard",
-      "Internet-enabled panel, flip chart stand",
-      "Access to Terrace 1, lagoon view",
-    ],
-    rates: ["Weekdays: ₦350,000 per day"],
-  },
-  {
-    id: "amphitheatre",
-    title: "Amphitheatre",
-    image: IMAGES.amphitheatre,
-    uses: ["Performances", "Screenings", "Lectures", "Community events", "Panels"],
-    features: [
-      "Capacity: 100-seater",
-      "Sound system",
-      "Pod screens",
-      "Audiovisual equipment",
-      "Accessible seating",
-    ],
-    rates: ["₦600,000 per day", "₦100,000 per hour (minimum 2 hours)"],
-  },
-  {
-    id: "art-studio",
-    title: "Art Studio",
-    image: IMAGES.artStudio,
-    uses: ["Art classes", "Workshops", "Portfolio creation", "Group creative sessions"],
-    features: ["Adjustable easels", "Natural lighting", "Workstations", "Outdoor space"],
-    rates: ["Weekly: ₦60,000", "Monthly: ₦200,000"],
-  },
-  {
-    id: "game-room",
-    title: "Game Room",
-    image: IMAGES.gameRoom,
-    uses: ["Casual hangouts", "Team bonding", "Social events"],
-    features: [
-      "Capacity: Up to 20 people",
-      "Access to Terrace 1",
-      "Board games, card games",
-      "Comfortable seating",
-      "Interactive screens, meeting space",
-    ],
-    rates: ["Weekdays: ₦550,000 per day"],
-  },
-  {
-    id: "makers-studio",
-    title: "Makers Studio",
-    image: IMAGES.makersStudio,
-    uses: ["Prototyping", "DIY projects", "Product design", "Creative making"],
-    features: [
-      "Capacity: Up to 50 people",
-      "TV screen, whiteboard",
-      "Internet-enabled panel",
-      "Flip chart stand",
-      "Lagoon view",
-    ],
-    rates: ["Weekdays: ₦450,000 per day"],
-  },
-  {
-    id: "terrace",
-    title: "Terrace",
-    image: IMAGES.terrace,
-    uses: ["Outdoor events", "Cocktail parties", "Networking events", "Small concerts", "Open-air workshops"],
-    features: [
-      "Open-air layout",
-      "Ambient lighting",
-      "Lagoon view",
-      "Flexible seating",
-      "Cooling fans",
-    ],
-    rates: ["Terrace 1 (1st floor): ₦100,000 per day", "Terrace 2 (2nd floor): ₦150,000 per day"],
-  },
-  {
-    id: "green-room",
-    title: "Green Room",
-    image: IMAGES.greenRoom,
-    uses: ["VIP holding area", "Interviews", "Private makeup/dressing", "Talent waiting area"],
-    features: ["Capacity: Up to 20 people", "TV Screen or interactive screen panel"],
-    rates: ["Weekdays: ₦250,000 per day"],
-  },
-] as const;
-
-// =============================
-// Smoke Tests (console only)
-// =============================
-function runSmokeTests() {
-  try {
-    const expect = (cond: boolean, msg: string) => { if (!cond) console.error(`SMOKE TEST: ${msg}`); };
-
-    // DATA structure
-    expect(Array.isArray(DATA), "DATA should be an array");
-    expect(DATA.length === 9, "DATA should contain 9 sections");
-
-    // IMAGES keys
-    const reqKeys = ["hero","gallery","photoStudio","meetingRoom","amphitheatre","artStudio","gameRoom","makersStudio","terrace","greenRoom","closing"];
-    reqKeys.forEach(k => expect(Object.prototype.hasOwnProperty.call(IMAGES, k), `IMAGES missing key ${k}`));
-
-    // Validate entries
-    DATA.forEach((s, idx) => {
-      expect(typeof s.id === "string" && s.id.length > 0, `#${idx} missing id`);
-      expect(typeof s.title === "string" && s.title.length > 0, `#${idx} missing title`);
-      expect(typeof s.image === "string", `#${idx} image should be a string (URL or empty)`);
-      expect(Array.isArray(s.uses) && s.uses.length > 0, `#${idx} uses should be non-empty`);
-      expect(Array.isArray(s.features) && s.features.length > 0, `#${idx} features should be non-empty`);
-      expect(Array.isArray(s.rates) && s.rates.length > 0, `#${idx} rates should be non-empty`);
-    });
-
-    // Fallback image handling
-    const styleEmpty = getBgStyle("");
-    expect(!('backgroundImage' in styleEmpty), "getBgStyle('') should not set backgroundImage");
-
-    const styleHero = getBgStyle(IMAGES.hero);
-    expect('backgroundImage' in styleHero, "getBgStyle(hero) should set backgroundImage");
-
-    console.info("SMOKE TEST: completed");
-  } catch (e) {
-    console.error("SMOKE TEST: exception", e);
-  }
-}
-runSmokeTests();
-
-function TopNav() {
-  const links = [
-    { id: "hero", label: "Home" },
-    { id: "booking", label: "Booking" },
-    ...DATA.map((s) => ({ id: s.id, label: s.title })),
-    { id: "closing", label: "Quote" },
-    { id: "contact", label: "Contact" },
-  ];
-
-  return (
-    <div className="pointer-events-none fixed inset-x-0 top-0 z-40 mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-      <div className="pointer-events-auto rounded-full border border-white/10 bg-black/60 px-4 py-2 text-sm font-semibold text-white/90 backdrop-blur-md">
-        MADHOUSE
-      </div>
-      <nav className="pointer-events-auto hidden items-center gap-2 rounded-full border border-white/10 bg-black/60 p-1 backdrop-blur-md md:flex">
-        {links.map((l) => (
-          <a
-            key={l.id}
-            href={`#${l.id}`}
-            className="rounded-full px-3 py-2 text-xs text-white/80 transition-all hover:text-white hover:shadow-[0_0_16px_rgba(255,106,0,0.35)]"
-            // @ts-ignore – allow CSS var inline
-            style={{ ['--orange']: ORANGE }}
-          >
-            {l.label}
-          </a>
-        ))}
+    /* Reveal on scroll */
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.is-visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+  <!-- Top Navigation -->
+  <div class="topnav">
+    <div class="topnav-inner">
+      <div class="chip">MADHOUSE</div>
+      <nav class="nav" id="topnav-links">
+        <a href="#hero">Home</a>
+        <a href="#booking">Booking</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#photography-studio">Photography Studio</a>
+        <a href="#meeting-room">Meeting Room</a>
+        <a href="#amphitheatre">Amphitheatre</a>
+        <a href="#art-studio">Art Studio</a>
+        <a href="#game-room">Game Room</a>
+        <a href="#makers-studio">Makers Studio</a>
+        <a href="#terrace">Terrace</a>
+        <a href="#green-room">Green Room</a>
+        <a href="#closing">Quote</a>
+        <a href="#contact">Contact</a>
       </nav>
     </div>
-  );
-}
+  </div>
 
-export default function MadHouseSpaceRental() {
-  return (
-    <div className="scroll-smooth bg-black text-white">
-      <TopNav />
-      <Hero />
-      <Booking />
+  <!-- Hero -->
+  <section id="hero" class="section" data-image-key="hero">
+    <div class="bg-layer"></div>
+    <div class="overlay"></div>
+    <div class="content center">
+      <div class="chip" style="background: rgba(255,255,255,.08); border-color: var(--border); font-weight:600;">Opening Hours: <span id="hours">9 AM – 6 PM</span></div>
+      <h1 class="title-xl reveal">MadHouse Space Rental</h1>
+      <p class="lead reveal">Spaces for art, ideas, and bold gatherings.</p>
+      <div class="row reveal">
+        <a class="btn-outline" href="#booking">Booking Policy</a>
+        <a class="btn" href="#contact">Contact</a>
+      </div>
+    </div>
+  </section>
 
-      {DATA.map((s) => (
-        <SpaceSection
-          key={s.id}
-          id={s.id}
-          title={s.title}
-          image={s.image}
-          uses={s.uses}
-          features={s.features}
-          rates={s.rates}
-          note={s.note}
-        />
-      ))}
+  <!-- Booking Policy -->
+  <section id="booking" class="section" data-image-key="booking">
+    <div class="bg-layer"></div>
+    <div class="overlay"></div>
+    <div class="content">
+      <div class="center">
+        <div class="kicker">Policy</div>
+        <h2 class="h2">Booking Policy & Information</h2>
+      </div>
+      <div class="card reveal" style="max-width:900px; margin: 0 auto;">
+        <ul>
+          <li>A deposit of 50% is required to secure your booking; the balance is due 5 days before the event.</li>
+          <li>All prices are fixed and exclusive of VAT.</li>
+          <li>Weekend events attract a 20% surcharge on the full rental value of the space being used.</li>
+          <li>A 30% charge during holidays.</li>
+          <li>A 20% caution fee will be added to the space rental.</li>
+          <li>To book any of our spaces, email or call us.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
-      <ClosingQuote />
-      <Contact />
-
-      {/* Footer Bar */}
-      <footer className="sticky bottom-0 z-50 w-full bg-gradient-to-t from-black/80 to-black/0 p-4">
-        <div className="mx-auto flex max-w-7xl items-center justify-between rounded-2xl border border-white/10 bg-black/60 px-4 py-3 backdrop-blur">
-          <span className="text-xs text-white/60">© {new Date().getFullYear()} MadHouse</span>
-          <div className="flex items-center gap-2">
-            <a
-              href="#contact"
-              className="rounded-xl border border-white/10 bg-[var(--orange)] px-4 py-2 text-xs font-semibold text-black transition-all hover:shadow-[0_0_24px_rgba(255,106,0,0.45)]"
-              // @ts-ignore – allow CSS var inline
-              style={{ ['--orange']: ORANGE }}
-            >
-              Book a Space
-            </a>
+  <!-- Space Sections -->
+  <section id="gallery" class="section" data-image-key="gallery">
+    <div class="bg-layer"></div><div class="overlay"></div>
+    <div class="content">
+      <div class="center"><div class="kicker">Space</div><h2 class="h2">Gallery</h2></div>
+      <div class="grid-2 reveal">
+        <div class="card"><h4>Uses</h4><ul><li>Art exhibitions</li><li>Pop-up shows</li><li>Brand showcases</li><li>Installations</li></ul></div>
+        <div>
+          <div class="card"><h4>Key Features</h4><ul><li>Capacity: Up to 100 people (conference seating)</li><li>Natural light, mood lighting</li><li>Sound system</li><li>Fully air-conditioned</li><li>Interactive display screens</li></ul></div>
+          <div class="rates" style="margin-top:12px;">
+            <span class="pill">₦1,000,000 per day (events other than exhibitions)</span>
           </div>
         </div>
-      </footer>
+      </div>
     </div>
-  );
-}
+  </section>
+
+  <section id="photography-studio" class="section" data-image-key="photoStudio">
+    <div class="bg-layer"></div><div class="overlay"></div>
+    <div class="content">
+      <div class="center"><div class="kicker">Space</div><h2 class="h2">Photography Studio</h2></div>
+      <div class="grid-2 reveal">
+        <div class="card"><h4>Uses</h4><ul><li>Photography sessions</li><li>Video shoots</li><li>Product shoots</li><li>Content creation</li></ul></div>
+        <div>
+          <div class="card"><h4>Key Features</h4><ul><li>Spacious studio</li><li>2 strobe lights</li><li>Access to 1 backdrop</li><li>1 AD100 Pro light</li><li>Changing area</li></ul><div class="note">In-house professional photographers are available on request.</div></div>
+          <div class="rates" style="margin-top:12px;">
+            <span class="pill">Video (Regular): Weekdays ₦30,000/hr, Weekends ₦35,000/hr</span>
+            <span class="pill">Video (Student): Weekdays ₦15,000/hr, Weekends ₦20,000/hr</span>
+            <span class="pill">Photo (Regular): Weekdays ₦15,000/hr, Weekends ₦20,000/hr</span>
+            <span class="pill">Photo (Student): Weekdays ₦10,000/hr, Weekends ₦15,000/hr</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="meeting-room" class="section" data-image-key="meetingRoom">
+    <div class="bg-layer"></div><div class="overlay"></div>
+    <div class="content">
+      <div class="center"><div class="kicker">Space</div><h2 class="h2">Meeting Room</h2></div>
+      <div class="grid-2 reveal">
+        <div class="card"><h4>Uses</h4><ul><li>Meetings</li><li>Presentations</li><li>Team strategy sessions</li><li>Interviews</li><li>Workshops</li></ul></div>
+        <div>
+          <div class="card"><h4>Key Features</h4><ul><li>Capacity: Up to 30 people</li><li>Seating: 20 chairs with writing pads</li><li>TV screen, whiteboard</li><li>Internet-enabled panel, flip chart stand</li><li>Access to Terrace 1, lagoon view</li></ul></div>
+          <div class="rates" style="margin-top:12px;">
+            <span class="pill">Weekdays: ₦350,000 per day</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="amphitheatre" class="section" data-image-key="amphitheatre">
+    <div class="bg-layer"></div><div class="overlay"></div>
+    <div class="content">
+      <div class="center"><div class="kicker">Space</div><h2 class="h2">Amphitheatre</h2></div>
+      <div class="grid-2 reveal">
+        <div class="card"><h4>Uses</h4><ul><li>Performances</li><li>Screenings</li><li>Lectures</li><li>Community events</li><li>Panels</li></ul></div>
+        <div>
+          <div class="card"><h4>Key Features</h4><ul><li>Capacity: 100-seater</li><li>Sound system</li><li>Pod screens</li><li>Audiovisual equipment</li><li>Accessible seating</li></ul></div>
+          <div class="rates" style="margin-top:12px;">
+            <span class="pill">₦600,000 per day</span>
+            <span class="pill">₦100,000 per hour (minimum 2 hours)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="art-studio" class="section" data-image-key="artStudio">
+    <div class="bg-layer"></div><div class="overlay"></div>
+    <div class="content">
+      <div class="center"><div class="kicker">Space</div><h2 class="h2">Art Studio</h2></div>
+      <div class="grid-2 reveal">
+        <div class="card"><h4>Uses</h4><ul><li>Art classes</li><li>Workshops</li><li>Portfolio creation</li><li>Group creative sessions</li></ul></div>
+        <div>
+          <div class="card"><h4>Key Features</h4><ul><li>Adjustable easels</li><li>Natural lighting</li><li>Workstations</li><li>Outdoor space</li></ul></div>
+          <div class="rates" style="margin-top:12px;">
+            <span class="pill">Weekly: ₦60,000</span>
+            <span class="pill">Monthly: ₦200,000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="game-room" class="section" data-image-key="gameRoom">
+    <div class="bg-layer"></div><div class="overlay"></div>
+    <div class="content">
+      <div class="center"><div class="kicker">Space</div><h2 class="h2">Game Room</h2></div>
+      <div class="grid-2 reveal">
+        <div class="card"><h4>Uses</h4><ul><li>Casual hangouts</li><li>Team bonding</li><li>Social events</li></ul></div>
+        <div>
+          <div class="card"><h4>Key Features</h4><ul><li>Capacity: Up to 20 people</li><li>Access to Terrace 1</li><li>Board games, card games</li><li>Comfortable seating</li><li>Interactive screens, meeting space</li></ul></div>
+          <div class="rates" style="margin-top:12px;">
+            <span class="pill">Weekdays: ₦550,000 per day</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="makers-studio" class="section" data-image-key="makersStudio">
+    <div class="bg-layer"></div><div class="overlay"></div>
+    <div class="content">
+      <div class="center"><div class="kicker">Space</div><h2 class="h2">Makers Studio</h2></div>
+      <div class="grid-2 reveal">
+        <div class="card"><h4>Uses</h4><ul><li>Prototyping</li><li>DIY projects</li><li>Product design</li><li>Creative making</li></ul></div>
+        <div>
+          <div class="card"><h4>Key Features</h4><ul><li>Capacity: Up to 50 people</li><li>TV screen, whiteboard</li><li>Internet-enabled panel</li><li>Flip chart stand</li><li>Lagoon view</li></ul></div>
+          <div class="rates" style="margin-top:12px;">
+            <span class="pill">Weekdays: ₦450,000 per day</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="terrace" class="section" data-image-key="terrace">
+    <div class="bg-layer"></div><div class="overlay"></div>
+    <div class="content">
+      <div class="center"><div class="kicker">Space</div><h2 class="h2">Terrace</h2></div>
+      <div class="grid-2 reveal">
+        <div class="card"><h4>Uses</h4><ul><li>Outdoor events</li><li>Cocktail parties</li><li>Networking events</li><li>Small concerts</li><li>Open-air workshops</li></ul></div>
+        <div>
+          <div class="card"><h4>Key Features</h4><ul><li>Open-air layout</li><li>Ambient lighting</li><li>Lagoon view</li><li>Flexible seating</li><li>Cooling fans</li></ul></div>
+          <div class="rates" style="margin-top:12px;">
+            <span class="pill">Terrace 1 (1st floor): ₦100,000 per day</span>
+            <span class="pill">Terrace 2 (2nd floor): ₦150,000 per day</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="green-room" class="section" data-image-key="greenRoom">
+    <div class="bg-layer"></div><div class="overlay"></div>
+    <div class="content">
+      <div class="center"><div class="kicker">Space</div><h2 class="h2">Green Room</h2></div>
+      <div class="grid-2 reveal">
+        <div class="card"><h4>Uses</h4><ul><li>VIP holding area</li><li>Interviews</li><li>Private makeup/dressing</li><li>Talent waiting area</li></ul></div>
+        <div>
+          <div class="card"><h4>Key Features</h4><ul><li>Capacity: Up to 20 people</li><li>TV screen or interactive screen panel</li></ul></div>
+          <div class="rates" style="margin-top:12px;">
+            <span class="pill">Weekdays: ₦250,000 per day</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing Quote -->
+  <section id="closing" class="section" data-image-key="closing">
+    <div class="bg-layer"></div>
+    <div class="overlay"></div>
+    <div class="content center">
+      <blockquote class="reveal">“Every great story starts with the right setting, and we have the perfect one for yours.”</blockquote>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="section" data-image-key="hero" style="min-height: 80svh;">
+    <div class="bg-layer"></div>
+    <div class="overlay" style="background: rgba(0,0,0,.4);"></div>
+    <div class="content center">
+      <div class="kicker">Get in touch</div>
+      <h2 class="h2">Contact</h2>
+      <div class="row reveal" style="justify-content:center;">
+        <a class="btn-outline" id="emailLink" href="mailto:spaces@tikeraafrica.org">spaces@tikeraafrica.org</a>
+        <a class="btn-outline" id="phoneLink" href="tel:+2348105570023">+234 810 557 0023</a>
+      </div>
+      <p class="lead" style="margin-top:14px;">Opening Hours: <span id="hours2">9 AM – 6 PM</span></p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <div class="footerbar">
+    <div class="footer-inner">
+      <span class="muted">© <span id="year"></span> MadHouse</span>
+      <a class="btn" href="#contact">Book a Space</a>
+    </div>
+  </div>
+
+  <script>
+    // --- Config: paste your image URLs or Google Drive links here ---
+    const IMAGES = {
+      hero: "https://drive.google.com/file/d/1LdcqZ2j_j_MkVnULO-YaO7bd2nUx49rT/view?usp=drive_link",
+      booking: "", // optional
+      gallery: "https://drive.google.com/file/d/1yKskQqzaYiT9tGx5c3nbgAiHh4bbzT78/view?usp=drive_link",
+      photoStudio: "https://drive.google.com/file/d/1Qk3Lc9GU82NX0D806bwrTXxrzfRa5Krl/view?usp=drive_link",
+      meetingRoom: "https://drive.google.com/file/d/1X6-uWm9KWK3WsbR0b2EZmn_e6QqmuWL5/view?usp=drive_link",
+      amphitheatre: "https://drive.google.com/file/d/1tfzl2Ico04mcbIc56foSnZoZiPR-h7qX/view?usp=drive_link",
+      artStudio: "https://drive.google.com/file/d/1EOtUoMErCFcJ7J0GFFWwuWvFsQlFK6Zg/view?usp=drive_link",
+      gameRoom: "https://drive.google.com/file/d/162Ul5OyQmYbUbAr07hVMqi0SDzV5vjAx/view?usp=drive_link",
+      makersStudio: "https://drive.google.com/file/d/1HK-oWdfYjkUAfRBcuv2L8glTgttWArTw/view?usp=drive_link",
+      terrace: "https://drive.google.com/file/d/1p-IMurIfS0r-IuZY8vKc3PaOSjGp0RgA/view?usp=drive_link",
+      greenRoom: "https://drive.google.com/file/d/12WWRtB8M6D1OSu--wEeoixJdentCI00F/view?usp=drive_link",
+      closing: "" // optional
+    };
+
+    const CONTACT = { email: "spaces@tikeraafrica.org", phone: "+234 810 557 0023", hours: "9 AM – 6 PM" };
+
+    // --- Helpers: convert Google Drive links to direct thumbnails ---
+    const extractDriveId = (url) => {
+      const m = String(url||"").match(/(?:id=|\/d\/)([\w-]+)/);
+      return m ? m[1] : null;
+    };
+    const driveToDirect = (urlOrId) => {
+      if (!urlOrId) return "";
+      const id = extractDriveId(urlOrId) || urlOrId;
+      return /^[\w-]{10,}$/.test(id)
+        ? `https://drive.google.com/thumbnail?id=${id}&sz=w2000`
+        : urlOrId;
+    };
+
+    // --- Apply backgrounds + parallax ---
+    const sections = document.querySelectorAll('.section');
+    const parallax = () => {
+      const scrollY = window.scrollY || window.pageYOffset;
+      sections.forEach(sec => {
+        const bg = sec.querySelector('.bg-layer');
+        if (!bg) return;
+        const rect = sec.getBoundingClientRect();
+        const offset = rect.top + scrollY; // page offset top
+        const speed = 0.15; // parallax strength
+        const y = (scrollY - offset) * speed;
+        bg.style.transform = `translate3d(0, ${y}px, 0)`;
+      });
+    };
+
+    const setBackgrounds = () => {
+      sections.forEach(sec => {
+        const key = sec.getAttribute('data-image-key');
+        const url = driveToDirect(IMAGES[key]);
+        const bg = sec.querySelector('.bg-layer');
+        if (url && bg) {
+          bg.style.backgroundImage = `url("${url}")`;
+        } else if (bg) {
+          bg.style.backgroundImage = 'none';
+          bg.style.background = 'linear-gradient(180deg, #111 0%, #000 100%)';
+        }
+      });
+      parallax();
+    };
+
+    // --- Reveal on scroll ---
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add('is-visible');
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // --- UI data bindings ---
+    document.getElementById('hours').textContent = CONTACT.hours;
+    document.getElementById('hours2').textContent = CONTACT.hours;
+    document.getElementById('emailLink').setAttribute('href', `mailto:${CONTACT.email}`);
+    document.getElementById('emailLink').textContent = CONTACT.email;
+    document.getElementById('phoneLink').setAttribute('href', `tel:${CONTACT.phone.replace(/\s/g,'')}`);
+    document.getElementById('phoneLink').textContent = CONTACT.phone;
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // --- Events ---
+    window.addEventListener('scroll', parallax, { passive: true });
+    window.addEventListener('resize', parallax);
+    window.addEventListener('load', () => { setBackgrounds(); parallax(); });
+
+    // --- Smoke tests (console) ---
+    (function tests(){
+      const expect = (cond, msg) => { if (!cond) console.error('SMOKE TEST:', msg); };
+      const keys = ['hero','gallery','photoStudio','meetingRoom','amphitheatre','artStudio','gameRoom','makersStudio','terrace','greenRoom','closing'];
+      keys.forEach(k => expect(Object.prototype.hasOwnProperty.call(IMAGES, k), `IMAGES missing ${k}`));
+      expect(!!document.getElementById('hero'), '#hero missing');
+      expect(document.querySelectorAll('.section').length >= 11, 'sections count should be >= 11');
+      const resolved = driveToDirect(IMAGES.hero);
+      expect(resolved.includes('drive.google.com/thumbnail') || resolved.startsWith('http'), 'driveToDirect should return usable URL');
+    })();
+  </script>
+</body>
+</html>
