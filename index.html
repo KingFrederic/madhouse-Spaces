@@ -1,253 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tikera Luxury Spaces</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MadHouse Spaces | Tikera Africa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
-    * {margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
-    body {background:#0f0f0f;color:#fff;overflow-x:hidden;}
+    * {margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif;}
 
-    /* Intro Animation */
-    #intro {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-    }
-    #intro h1 {
-      font-size: 3rem;
-      color: #FF6A00;
-      text-shadow: 0 0 20px #d4af37;
-      opacity: 0;
+    body {
+      background: #0e0e0e;
+      color: #fff;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
     }
 
     header {
       position: fixed;
-      top: 0; left: 0;
+      top: 0;
+      left: 0;
       width: 100%;
-      padding: 1rem 5%;
+      padding: 1.5rem 5%;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(15,15,15,0.5);
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(12px);
+      background: rgba(15, 15, 15, 0.6);
       z-index: 1000;
     }
-    header h1 {color:#FF6A00;font-weight:800;font-size:1.8rem;}
-    header nav a {
-      color:#fff;text-decoration:none;margin-left:2rem;font-weight:500;transition:color .3s;
+
+    header h1 {
+      font-size: 1.8rem;
+      color: #ff7a00;
+      font-weight: 700;
     }
-    header nav a:hover {color:#d4af37;}
 
-    /* Hero */
-    #hero {
-      height:100vh;
-      display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
-      background:url('https://images.unsplash.com/photo-1600585154340-be6161f99c39?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
-      position:relative;overflow:hidden;
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 1.5rem;
+      font-weight: 400;
+      transition: color 0.3s ease;
     }
-    #hero canvas {position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;}
-    #hero .content {position:relative;z-index:2;}
-    #hero h2 {font-size:3.5rem;margin-bottom:1rem;color:#fff;text-shadow:0 0 20px rgba(255,106,0,.7);}
-    #hero p {font-size:1.2rem;color:#ddd;max-width:600px;margin:0 auto 2rem;}
-    .btn {padding:1rem 2rem;border:none;border-radius:40px;font-weight:600;cursor:pointer;margin:0 .5rem;
-      background:linear-gradient(135deg,#FF6A00,#d4af37);color:#000;
-      box-shadow:0 0 20px rgba(255,106,0,.6);transition:all .3s;}
-    .btn:hover {transform:scale(1.08);box-shadow:0 0 35px rgba(212,175,55,.9);}
+    nav a:hover { color: #ff7a00; }
 
-    /* Sections */
-    section {padding:7rem 10% 6rem 10%;position:relative;}
-    section h3 {font-size:2.2rem;color:#FF6A00;margin-bottom:1rem;}
-
-    .spaces {
-      display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:2rem;
+    section {
+      min-height: 100vh;
+      padding: 8rem 8% 5rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
     }
-    .card {
-      background:rgba(255,255,255,0.05);
-      backdrop-filter:blur(12px);
-      border-radius:20px;
-      overflow:hidden;
-      box-shadow:0 0 20px rgba(0,0,0,.5);
-      transform-style:preserve-3d;
-      transition:transform .5s,box-shadow .5s;
+
+    section::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(2px);
+      z-index: 1;
     }
-    .card:hover {transform:translateY(-10px) scale(1.03);box-shadow:0 0 40px rgba(255,106,0,.7);}
-    .card img {width:100%;height:220px;object-fit:cover;}
-    .card-content {padding:1.5rem;}
-    .card-content h4 {color:#d4af37;font-size:1.3rem;margin-bottom:.5rem;}
-    .card-content p {color:#ccc;font-size:.95rem;line-height:1.6;}
-    .price {display:inline-block;margin-top:1rem;background:linear-gradient(135deg,#FF6A00,#d4af37);
-      padding:.5rem 1rem;border-radius:30px;font-weight:bold;color:#000;}
 
-    /* Booking */
-    #booking {text-align:center;}
-    #booking p {max-width:600px;margin:0 auto 2rem;color:#ccc;}
+    section .content {
+      position: relative;
+      z-index: 2;
+      max-width: 650px;
+    }
 
-    /* Footer */
+    h2 {
+      font-size: 2.5rem;
+      color: #ff7a00;
+      margin-bottom: 1rem;
+    }
+
+    p { font-size: 1rem; line-height: 1.7; color: #eee; }
+
+    ul.amenities {
+      margin-top: 1rem;
+      padding-left: 1rem;
+      list-style: none;
+    }
+
+    ul.amenities li::before {
+      content: '\2713';
+      color: #ff7a00;
+      margin-right: 8px;
+    }
+
+    .price {
+      margin-top: 1rem;
+      font-weight: 600;
+      color: #fff;
+      font-size: 1.2rem;
+    }
+
+    /* Floating Book Now Button */
+    .book-now {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #ff7a00;
+      padding: 15px 30px;
+      border-radius: 50px;
+      color: #fff;
+      font-weight: bold;
+      box-shadow: 0 0 20px rgba(255, 122, 0, 0.6);
+      cursor: pointer;
+      z-index: 1001;
+      transition: all 0.3s ease;
+    }
+    .book-now:hover { box-shadow: 0 0 40px rgba(255, 122, 0, 1); }
+
     footer {
-      background:#0b0b0b;text-align:center;padding:2rem;color:#aaa;font-size:.95rem;
-      border-top:1px solid rgba(255,255,255,.1);
+      text-align: center;
+      padding: 2rem;
+      background: #111;
+      color: #aaa;
     }
-    footer a {color:#FF6A00;text-decoration:none;}
+
+    footer a { color: #ff7a00; text-decoration: none; }
   </style>
 </head>
 <body>
 
-  <div id="intro"><h1>Tikera Africa</h1></div>
+<header>
+  <h1>MadHouse Spaces</h1>
+  <nav>
+    <a href="#gallery">Gallery</a>
+    <a href="#studio">Photography Studio</a>
+    <a href="#amphitheatre">Amphitheatre</a>
+    <a href="#makers">Makers Studio</a>
+    <a href="#terrace">Terrace</a>
+    <a href="#green">Green Room</a>
+  </nav>
+</header>
 
-  <header>
-    <h1>Tikera Spaces</h1>
-    <nav>
-      <a href="#spaces">Spaces</a>
-      <a href="#booking">Booking</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </header>
+<!-- Hero Section -->
+<section id="hero" style="background-image: url('https://images.unsplash.com/photo-1582719478171-2d3ef1f1c60d?auto=format&fit=crop&w=1950&q=80');">
+  <div class="content">
+    <h2>Luxury Spaces, Endless Possibilities</h2>
+    <p>MadHouse by Tikera Africa offers breathtaking venues, studios, and creative hubs designed for unforgettable experiences.</p>
+  </div>
+</section>
 
-  <section id="hero">
-    <canvas id="particles"></canvas>
-    <div class="content">
-      <h2>Experience Lagos' Most Exclusive Spaces</h2>
-      <p>Premium venues curated to deliver unforgettable events, productions, and executive experiences.</p>
-      <button class="btn" onclick="document.querySelector('#spaces').scrollIntoView({behavior:'smooth'})">Explore Spaces</button>
-      <button class="btn" onclick="document.querySelector('#booking').scrollIntoView({behavior:'smooth'})">Book Now</button>
-    </div>
-  </section>
+<!-- Gallery -->
+<section id="gallery" style="background-image: url('https://images.unsplash.com/photo-1590490360182-0e90c4f1e86f?auto=format&fit=crop&w=1950&q=80');">
+  <div class="content">
+    <h2>Gallery</h2>
+    <p>Host exhibitions, launches, or intimate events in our world-class gallery space.</p>
+    <ul class="amenities">
+      <li>Natural & mood lighting</li>
+      <li>Sound system</li>
+      <li>Fully air-conditioned</li>
+      <li>Interactive display screens</li>
+    </ul>
+    <p class="price">₦1,000,000 per day (exhibitions excluded)</p>
+  </div>
+</section>
 
-  <section id="spaces">
-    <h3>Our Premium Spaces</h3>
-    <div class="spaces">
-      <div class="card">
-        <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80" alt="Gallery">
-        <div class="card-content">
-          <h4>Gallery</h4>
-          <p>Capacity: 100 | Natural light, mood lighting, sound system, fully air-conditioned, interactive displays.</p>
-          <span class="price">₦1,000,000 / day</span>
-        </div>
-      </div>
+<!-- Photography Studio -->
+<section id="studio" style="background-image: url('https://images.unsplash.com/photo-1534081333815-ae5019106622?auto=format&fit=crop&w=1950&q=80');">
+  <div class="content">
+    <h2>Photography Studio</h2>
+    <ul class="amenities">
+      <li>Spacious studio with modern equipment</li>
+      <li>2 strobe lights + backdrop access</li>
+      <li>Changing area</li>
+      <li>In-house professional photographers</li>
+    </ul>
+    <p class="price">Weekdays: ₦15,000/hr | Weekends: ₦20,000/hr</p>
+  </div>
+</section>
 
-      <div class="card">
-        <img src="https://images.unsplash.com/photo-1522204523234-8727e82b1788?auto=format&fit=crop&w=800&q=80" alt="Photography Studio">
-        <div class="card-content">
-          <h4>Photography Studio</h4>
-          <p>Spacious studio, strobe lights, backdrop, AD100 pro, changing area, in-house photographers.</p>
-          <span class="price">₦15,000/hr weekdays</span>
-        </div>
-      </div>
+<!-- Amphitheatre -->
+<section id="amphitheatre" style="background-image: url('https://images.unsplash.com/photo-1526403229154-5f7e6fc44a30?auto=format&fit=crop&w=1950&q=80');">
+  <div class="content">
+    <h2>Amphitheatre</h2>
+    <p>Perfect for performances, talks, and cinematic experiences.</p>
+    <ul class="amenities">
+      <li>Sound system</li>
+      <li>Pod screens</li>
+      <li>Audiovisual equipment</li>
+      <li>Accessible seating</li>
+    </ul>
+    <p class="price">₦600,000 per day | ₦100,000/hr (min 2 hrs)</p>
+  </div>
+</section>
 
-      <div class="card">
-        <img src="https://images.unsplash.com/photo-1507209696998-3c532be9b2b2?auto=format&fit=crop&w=800&q=80" alt="Conference Room">
-        <div class="card-content">
-          <h4>Conference Room</h4>
-          <p>Capacity: 30 | Lagoon view + terrace, TV screen, whiteboard, internet-enabled panel.</p>
-          <span class="price">₦350,000 / day</span>
-        </div>
-      </div>
+<!-- Makers Studio -->
+<section id="makers" style="background-image: url('https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1950&q=80');">
+  <div class="content">
+    <h2>Makers Studio</h2>
+    <p>Ideal for creative workshops, prototyping, and design sessions.</p>
+    <ul class="amenities">
+      <li>TV screen</li>
+      <li>Whiteboard</li>
+      <li>Flip chart stand</li>
+    </ul>
+    <p class="price">₦450,000 per day</p>
+  </div>
+</section>
 
-      <div class="card">
-        <img src="https://images.unsplash.com/photo-1600566752220-df52b4e65908?auto=format&fit=crop&w=800&q=80" alt="Makers Studio">
-        <div class="card-content">
-          <h4>Makers Studio</h4>
-          <p>Capacity: 50 | Lagoon view, TV screen, whiteboard, internet-enabled panel.</p>
-          <span class="price">₦450,000 / day</span>
-        </div>
-      </div>
+<!-- Terrace -->
+<section id="terrace" style="background-image: url('https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1950&q=80');">
+  <div class="content">
+    <h2>Terraces</h2>
+    <p>Relaxing open-air views overlooking the lagoon.</p>
+    <ul class="amenities">
+      <li>Terrace 1: ₦100,000/day</li>
+      <li>Terrace 2: ₦150,000/day</li>
+    </ul>
+  </div>
+</section>
 
-      <div class="card">
-        <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80" alt="Terraces">
-        <div class="card-content">
-          <h4>Terraces</h4>
-          <p>Lagoon views, open-air elegance, perfect for premium events.</p>
-          <span class="price">₦100,000 - ₦150,000 / day</span>
-        </div>
-      </div>
+<!-- Green Room -->
+<section id="green" style="background-image: url('https://images.unsplash.com/photo-1582719478171-2d3ef1f1c60d?auto=format&fit=crop&w=1950&q=80');">
+  <div class="content">
+    <h2>Green Room</h2>
+    <p>Designed for comfort and relaxation before or after events.</p>
+    <ul class="amenities">
+      <li>Fully furnished lounge</li>
+      <li>Complimentary drinks</li>
+      <li>Premium privacy</li>
+    </ul>
+  </div>
+</section>
 
-      <div class="card">
-        <img src="https://images.unsplash.com/photo-1542744095-291d1f67b221?auto=format&fit=crop&w=800&q=80" alt="Amphitheatre">
-        <div class="card-content">
-          <h4>Amphitheatre</h4>
-          <p>Capacity: 80 | Sound system, pod screens, audiovisual equipment.</p>
-          <span class="price">₦600,000/day</span>
-        </div>
-      </div>
+<!-- Floating Book Now Button -->
+<a href="mailto:spaces@tikeraafrica.org" class="book-now">Book Now</a>
 
-      <div class="card">
-        <img src="https://images.unsplash.com/photo-1616628182501-bb1be8d8809f?auto=format&fit=crop&w=800&q=80" alt="Games Room">
-        <div class="card-content">
-          <h4>Games Room</h4>
-          <p>Interactive screens, board games, card games, premium comfort.</p>
-          <span class="price">₦550,000/day</span>
-        </div>
-      </div>
-    </div>
-  </section>
+<footer>
+  Opening Hours: 9am - 6pm | For bookings: <a href="mailto:spaces@tikeraafrica.org">spaces@tikeraafrica.org</a> | +234 810 557 0023
+  <br><br>
+  © 2025 MadHouse by Tikera Africa. All Rights Reserved.
+</footer>
 
-  <section id="booking">
-    <h3>Booking Policy</h3>
-    <p>All prices are exclusive of VAT. Weekend events attract a 20% surcharge. A 50% deposit is required to secure bookings; balance due 5 days before your event.</p>
-    <button class="btn">Book Your Space</button>
-  </section>
-
-  <footer id="contact">
-    Opening Hours: 9am - 6pm | For bookings: <a href="mailto:spaces@tikeraafrica.org">spaces@tikeraafrica.org</a> | +234 810 557 0023
-    <br><br>© 2025 Tikera Africa. All Rights Reserved.
-  </footer>
-
-  <script>
-    // Intro animation
-    gsap.to('#intro h1', {opacity:1,duration:1.5,y:0});
-    gsap.to('#intro', {delay:2,opacity:0,duration:1.5,onComplete:()=>{
-      document.getElementById('intro').style.display='none';
-    }});
-
-    // Scroll-triggered animations
-    gsap.utils.toArray('.card').forEach((card,i)=>{
-      gsap.from(card,{
-        opacity:0,
-        y:50,
-        duration:1,
-        delay:i*0.2,
-        scrollTrigger:{trigger:card,start:"top 80%"}
-      });
-    });
-
-    // Three.js Particle Waves
-    const scene=new THREE.Scene();
-    const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
-    const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('particles'),alpha:true});
-    renderer.setSize(window.innerWidth,window.innerHeight);
-
-    const particlesGeometry=new THREE.BufferGeometry();
-    const particlesCount=500;
-    const positions=new Float32Array(particlesCount*3);
-    for(let i=0;i<particlesCount*3;i++){positions[i]=(Math.random()-0.5)*5;}
-    particlesGeometry.setAttribute('position',new THREE.BufferAttribute(positions,3));
-    const particlesMaterial=new THREE.PointsMaterial({size:0.02,color:'#FF6A00'});
-    const particlesMesh=new THREE.Points(particlesGeometry,particlesMaterial);
-    scene.add(particlesMesh);
-
-    camera.position.z=2;
-    function animate(){
-      requestAnimationFrame(animate);
-      particlesMesh.rotation.y+=0.001;
-      renderer.render(scene,camera);
-    }
-    animate();
-
-    window.addEventListener('resize',()=>{
-      camera.aspect=window.innerWidth/window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth,window.innerHeight);
-    });
-  </script>
 </body>
 </html>
