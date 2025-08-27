@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MadHouse Spaces</title>
+  <title>MadHouse Luxury Spaces</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -12,29 +12,22 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
     body { background: #0e0e0e; color: #fff; scroll-behavior: smooth; }
-
-    header { position: fixed; top: 0; left: 0; width: 100%; padding: 1.2rem 8%; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    header { position: fixed; top: 0; left: 0; width: 100%; padding: 1.2rem 8%; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.1); }
     header h1 { color: #ff6600; font-weight: 700; font-size: 1.8rem; }
     header nav a { color: #fff; margin-left: 2rem; text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
     header nav a:hover { color: #ff6600; }
-
     section { padding: 7rem 8% 5rem; min-height: 100vh; position: relative; border-bottom: 1px solid rgba(255,255,255,0.05); }
     section h2 { font-size: 2.5rem; color: #ff6600; margin-bottom: 1rem; }
     section p, li { font-size: 1.05rem; color: #ccc; line-height: 1.7; }
-
     .space-section { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; }
     .space-section img { width: 100%; height: 450px; object-fit: cover; border-radius: 15px; box-shadow: 0 0 30px rgba(255,102,0,0.25); }
-
     .amenities { list-style: none; padding-left: 0; margin-top: 0.8rem; }
     .amenities li::before { content: "✔"; color: #ff6600; margin-right: 8px; }
     .price { margin-top: 0.7rem; color: #fff; font-weight: 600; font-size: 1.1rem; }
-
     .book-now { position: fixed; bottom: 25px; right: 25px; background: #ff6600; color: #fff; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; font-size: 1.1rem; text-decoration: none; box-shadow: 0 0 20px rgba(255,102,0,0.6); transition: transform 0.3s ease, box-shadow 0.3s ease; z-index: 2000; }
     .book-now:hover { transform: scale(1.05); box-shadow: 0 0 35px rgba(255,102,0,0.9); }
-
     footer { text-align: center; padding: 2rem; background: #0b0b0b; color: #888; }
     footer a { color: #ff6600; text-decoration: none; }
-
     @media(max-width: 900px) { .space-section { grid-template-columns: 1fr; } }
   </style>
 </head>
@@ -43,129 +36,159 @@
     <h1>MadHouse Spaces</h1>
     <nav>
       <a href="#gallery">Gallery</a>
-      <a href="#studio">Photo Studio</a>
+      <a href="#studio">Photography Studio</a>
       <a href="#amphitheatre">Amphitheatre</a>
+      <a href="#artstudio">Art Studio</a>
+      <a href="#gameroom">Game Room</a>
       <a href="#makers">Makers Studio</a>
       <a href="#terrace">Terrace</a>
-      <a href="#gameroom">Game Room</a>
       <a href="#greenroom">Green Room</a>
-      <a href="#artstudio">Art Studio</a>
     </nav>
   </header>
 
+  <!-- Hero Section -->
+  <section id="hero" style="background:url('https://source.unsplash.com/1600x900/?luxury,architecture') center/cover no-repeat; display:flex; align-items:center; justify-content:center; flex-direction:column; text-align:center;">
+    <h1 style="font-size:3.5rem;color:#fff;text-shadow:0 0 15px rgba(0,0,0,0.7)">MadHouse Luxury Spaces</h1>
+    <p style="font-size:1.3rem;color:#ff6600;margin:1rem 0">Where Creativity Meets Premium Comfort</p>
+    <a href="#gallery" style="background:#ff6600;color:#fff;padding:1rem 2rem;border-radius:30px;font-weight:700;text-decoration:none;box-shadow:0 0 30px rgba(255,102,0,0.8)">Explore Spaces</a>
+  </section>
+
+  <!-- Booking Policy -->
+  <section id="policy">
+    <h2>Booking Policy</h2>
+    <p>Bookings are confirmed upon payment. Cancellations made less than 48 hours before the reservation attract a 50% fee.</p>
+    <p>Operating Hours: 9AM - 9PM | Contact: spaces@tikeraafrica.org | +234 810 557 0023</p>
+  </section>
+
+  <!-- Gallery -->
   <section id="gallery" class="space-section">
-    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267" alt="Gallery" />
+    <img src="https://drive.google.com/uc?id=1yKskQqzaYiT9tGx5c3nbgAiHh4bbzT78" alt="Gallery" />
     <div>
       <h2>Gallery</h2>
-      <p>Up to 100 people with conference seating.</p>
+      <p>Art exhibitions, pop-up shows, brand showcases, installations.</p>
       <ul class="amenities">
-        <li>Natural light & mood lighting</li>
-        <li>Integrated sound system</li>
-        <li>Fully air-conditioned</li>
+        <li>Capacity: Up to 100 (conference seating)</li>
+        <li>Natural light, mood lighting, sound system</li>
         <li>Interactive display screens</li>
+        <li>Fully air-conditioned</li>
       </ul>
-      <p class="price">₦1,000,000 per day (exhibitions excluded)</p>
+      <p class="price">₦1,000,000 / day</p>
     </div>
   </section>
 
+  <!-- Photography Studio -->
   <section id="studio" class="space-section">
-    <img src="https://images.unsplash.com/photo-1618221195710-dd6b42f7c3d1" alt="Photo Studio" />
+    <img src="https://drive.google.com/uc?id=1LjP6-gjfxZx9Ap89bJhKYWCCm9-ziwmX" alt="Photography Studio" />
     <div>
-      <h2>Photo Studio</h2>
+      <h2>Photography Studio</h2>
+      <p>Perfect for photoshoots, video shoots, and commercial productions.</p>
       <ul class="amenities">
-        <li>Spacious setup</li>
-        <li>2 strobe lights</li>
-        <li>Backdrops access</li>
-        <li>AD100 Pro (1)</li>
-        <li>Changing area</li>
-        <li>Professional in-house photographers</li>
+        <li>Customizable lighting rigs</li>
+        <li>White, black, and chroma backdrops</li>
+        <li>Professional soundproofing</li>
+        <li>Fully air-conditioned</li>
       </ul>
-      <p class="price">Weekdays: ₦15,000/hr | Weekends: ₦20,000/hr</p>
+      <p class="price">₦750,000 / day</p>
     </div>
   </section>
 
+  <!-- Amphitheatre -->
   <section id="amphitheatre" class="space-section">
-    <img src="https://images.unsplash.com/photo-1571772996211-2f02c9727629" alt="Amphitheatre" />
+    <img src="https://drive.google.com/uc?id=1tfzl2Ico04mcbIc56foSnZoZiPR-h7qX" alt="Amphitheatre" />
     <div>
       <h2>Amphitheatre</h2>
-      <p>Capacity: 80 seats.</p>
+      <p>Outdoor venue for performances, screenings, and intimate shows.</p>
       <ul class="amenities">
-        <li>Sound system</li>
-        <li>Pod screens</li>
-        <li>Audiovisual setup</li>
-        <li>Accessible seating</li>
+        <li>Open-air natural acoustics</li>
+        <li>Stage and tiered seating</li>
+        <li>Integrated lighting and sound system</li>
+        <li>Seats up to 150 guests</li>
       </ul>
-      <p class="price">₦600,000 per day | ₦100,000/hr (2hr minimum)</p>
+      <p class="price">₦1,200,000 / day</p>
     </div>
   </section>
 
-  <section id="makers" class="space-section">
-    <img src="https://images.unsplash.com/photo-1618221196012-ecce19c90f28" alt="Makers Studio" />
-    <div>
-      <h2>Makers Studio</h2>
-      <p>Capacity: 50 people with lagoon views.</p>
-      <ul class="amenities">
-        <li>Smart TV screen</li>
-        <li>Whiteboard</li>
-        <li>Internet-enabled panel</li>
-        <li>Flip chart stand</li>
-      </ul>
-      <p class="price">₦450,000 per day</p>
-    </div>
-  </section>
-
-  <section id="terrace" class="space-section">
-    <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511" alt="Terrace" />
-    <div>
-      <h2>Terrace</h2>
-      <ul class="amenities">
-        <li>Terrace 1 (1st floor): ₦100,000/day</li>
-        <li>Terrace 2 (2nd floor): ₦150,000/day</li>
-      </ul>
-    </div>
-  </section>
-
-  <section id="gameroom" class="space-section">
-    <img src="https://images.unsplash.com/photo-1617350998744-e49d00d8fc3b" alt="Game Room" />
-    <div>
-      <h2>Game Room</h2>
-      <ul class="amenities">
-        <li>PS5 setup</li>
-        <li>FIFA, NBA, Mortal Kombat</li>
-        <li>Spacious lounge seating</li>
-      </ul>
-      <p class="price">₦50,000/hr</p>
-    </div>
-  </section>
-
-  <section id="greenroom" class="space-section">
-    <img src="https://images.unsplash.com/photo-1600585154340-be6161d1d89b" alt="Green Room" />
-    <div>
-      <h2>Green Room</h2>
-      <ul class="amenities">
-        <li>Perfect for artist prep</li>
-        <li>Comfortable seating</li>
-        <li>Mirror setup with lighting</li>
-      </ul>
-      <p class="price">₦80,000/day</p>
-    </div>
-  </section>
-
+  <!-- Art Studio -->
   <section id="artstudio" class="space-section">
-    <img src="https://images.unsplash.com/photo-1618213837799-8e0b3af08f72" alt="Art Studio" />
+    <img src="https://drive.google.com/uc?id=1EOtUoMErCFcJ7J0GFFWwuWvFsQlFK6Zg" alt="Art Studio" />
     <div>
       <h2>Art Studio</h2>
+      <p>Dedicated creative space for artists, workshops, and masterclasses.</p>
       <ul class="amenities">
-        <li>Dedicated workspace</li>
+        <li>Spacious open-floor layout</li>
+        <li>High tables and easels provided</li>
         <li>Natural lighting</li>
-        <li>Creative-friendly layout</li>
+        <li>Fully air-conditioned</li>
       </ul>
-      <p class="price">₦300,000/day</p>
+      <p class="price">₦500,000 / day</p>
     </div>
   </section>
 
-  <a href="#booking" class="book-now">Book Now</a>
+  <!-- Game Room -->
+  <section id="gameroom" class="space-section">
+    <img src="https://drive.google.com/uc?id=162Ul5OyQmYbUbAr07hVMqi0SDzV5vjAx" alt="Game Room" />
+    <div>
+      <h2>Game Room</h2>
+      <p>Chill zone with games, music, and relaxation vibes.</p>
+      <ul class="amenities">
+        <li>Pool tables, PS5, and arcade sets</li>
+        <li>Ambient LED lighting</li>
+        <li>Luxury seating arrangements</li>
+        <li>Fully air-conditioned</li>
+      </ul>
+      <p class="price">₦350,000 / day</p>
+    </div>
+  </section>
 
+  <!-- Makers Studio -->
+  <section id="makers" class="space-section">
+    <img src="https://drive.google.com/uc?id=1HK-oWdfYjkUAfRBcuv2L8glTgttWArTw" alt="Makers Studio" />
+    <div>
+      <h2>Makers Studio</h2>
+      <p>Innovative workspace for prototyping and creative builds.</p>
+      <ul class="amenities">
+        <li>3D printers and CNC machines</li>
+        <li>Woodworking and fabrication tools</li>
+        <li>Spacious benches and tool storage</li>
+        <li>Fully air-conditioned</li>
+      </ul>
+      <p class="price">₦900,000 / day</p>
+    </div>
+  </section>
+
+  <!-- Terrace -->
+  <section id="terrace" class="space-section">
+    <img src="https://drive.google.com/uc?id=1p-IMurIfS0r-IuZY8vKc3PaOSjGp0RgA" alt="Terrace" />
+    <div>
+      <h2>Terrace</h2>
+      <p>Two connected terraces perfect for intimate gatherings and cocktail events.</p>
+      <ul class="amenities">
+        <li>Panoramic city views</li>
+        <li>Outdoor seating</li>
+        <li>Customizable décor options</li>
+        <li>Seats up to 50 guests each</li>
+      </ul>
+      <p class="price">₦600,000 / day</p>
+    </div>
+  </section>
+
+  <!-- Green Room -->
+  <section id="greenroom" class="space-section">
+    <img src="https://drive.google.com/uc?id=12WWRtB8M6D1OSu--wEeoixJdentCI00F" alt="Green Room" />
+    <div>
+      <h2>Green Room</h2>
+      <p>Luxury preparation space for guests, speakers, and performers.</p>
+      <ul class="amenities">
+        <li>Vanity mirrors and professional lighting</li>
+        <li>Relaxation lounge with minibar</li>
+        <li>Private restrooms</li>
+        <li>Fully air-conditioned</li>
+      </ul>
+      <p class="price">₦400,000 / day</p>
+    </div>
+  </section>
+
+  <a href="mailto:spaces@tikeraafrica.org" class="book-now">Book Now</a>
   <footer>
     For bookings: <a href="mailto:spaces@tikeraafrica.org">spaces@tikeraafrica.org</a> | +234 810 557 0023<br>
     © 2025 MadHouse by Tikera Africa
