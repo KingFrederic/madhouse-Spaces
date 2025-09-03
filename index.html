@@ -60,7 +60,17 @@
 .lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:60}
 .lightbox.is-open{display:flex}
 .lightbox-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(2px)}
-.lightbox img{position:relative;max-width:92vw;max-height:86vh;border-radius:14px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.lightbox img{
+  position:relative;
+  width:92vw;
+  max-width:1600px;
+  max-height:86vh;
+  height:auto;
+  object-fit:contain;
+  border-radius:14px;
+  border:1px solid var(--border);
+  box-shadow:0 20px 60px rgba(0,0,0,.6)
+}
 .lightbox-close{position:absolute;top:20px;right:20px;background:var(--orange);color:#000;border:none;border-radius:999px;width:40px;height:40px;font-size:20px;font-weight:700;cursor:pointer;box-shadow:0 0 24px rgba(255,106,0,.45)}
 .lightbox-caption{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#fff;background:rgba(0,0,0,.55);border:1px solid var(--border);padding:8px 12px;border-radius:12px;font-size:14px}
   </style>
@@ -355,7 +365,13 @@
     // --- Events ---
     window.addEventListener('scroll', parallax, { passive: true });
     window.addEventListener('resize', parallax);
-    window.addEventListener('load', () => { setBackgrounds(); parallax(); initTiles(); initLightbox(); });
+    window.addEventListener('load', () => {
+  setBackgrounds()
+  parallax()
+  initTiles()
+  initLightbox()
+})
+
 // Lightbox + Tiles
 let LB = { root:null, img:null, caption:null, close:null, backdrop:null };
 
@@ -386,16 +402,17 @@ function initLightbox(){
 }
 
 function openLightbox(url, title){
-  if (!LB.root || !url) return;
-  // bump Drive thumbnail size up for crisper full image
-  const hi = url.replace(/(\\?|&)sz=w\\d+/,'$1sz=w4000').replace(/\\?$/,'?sz=w4000');
-  const caption = title || '';
-  LB.img.setAttribute('src', hi);
-  LB.img.setAttribute('alt', caption);
-  LB.caption.textContent = caption; // caption = space name
-  LB.root.setAttribute('aria-label', caption);
-  LB.root.classList.add('is-open');
-  document.body.style.overflow = 'hidden';
+  if (!LB.root || !url) return
+  const hi = url
+    .replace(/(\?|&)sz=w\d+/, '$1sz=w4000')
+    .replace(/\?$/, '?sz=w4000')
+  const caption = title || ''
+  LB.img.setAttribute('src', hi)
+  LB.img.setAttribute('alt', caption)
+  LB.caption.textContent = caption
+  LB.root.setAttribute('aria-label', caption)
+  LB.root.classList.add('is-open')
+  document.body.style.overflow = 'hidden'
 }
 
 function closeLightbox(){
