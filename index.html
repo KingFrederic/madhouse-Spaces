@@ -48,6 +48,21 @@
     table.pricetable thead th{font-size:13px;color:rgba(255,255,255,.85)}
     table.pricetable tbody tr{background:rgba(255,255,255,.06);border:1px solid var(--border)}
     table.pricetable tbody tr td:first-child{font-weight:600}
+    /* Space Gallery */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:20px}
+.tile{position:relative;border:1px solid var(--border);background:var(--card);border-radius:18px;overflow:hidden;cursor:pointer;transition:box-shadow .3s,border-color .3s,transform .2s}
+.tile:hover{box-shadow:0 0 24px rgba(255,106,0,.35);border-color:rgba(255,106,0,.6);transform:translateY(-2px)}
+.tile-media{width:100%;aspect-ratio:4/3;background-size:cover;background-position:center;transition:transform .35s}
+.tile:hover .tile-media{transform:scale(1.04)}
+.tile-title{position:absolute;left:12px;bottom:12px;padding:6px 10px;border-radius:12px;background:rgba(0,0,0,.55);border:1px solid var(--border);font-weight:600;font-size:13px}
+
+/* Lightbox */
+.lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:60}
+.lightbox.is-open{display:flex}
+.lightbox-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(2px)}
+.lightbox img{position:relative;max-width:92vw;max-height:86vh;border-radius:14px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.lightbox-close{position:absolute;top:20px;right:20px;background:var(--orange);color:#000;border:none;border-radius:999px;width:40px;height:40px;font-size:20px;font-weight:700;cursor:pointer;box-shadow:0 0 24px rgba(255,106,0,.45)}
+.lightbox-caption{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#fff;background:rgba(0,0,0,.55);border:1px solid var(--border);padding:8px 12px;border-radius:12px;font-size:14px}
   </style>
 </head>
 <body>
@@ -68,6 +83,7 @@
         <a href="#gallery">Gallery</a>
         <a href="#closing">Quote</a>
         <a href="#contact">Contact</a>
+        <a href="#space-gallery">Space Gallery</a>
         <a href="#space-policy">Space Policy</a>
       </nav>
     </div>
@@ -225,6 +241,29 @@
       </div>
     </div>
   </section>
+<!-- Space Gallery -->
+<section id="space-gallery" class="section" data-image-key="gallery">
+  <div class="bg-layer"></div>
+  <div class="overlay"></div>
+  <div class="content">
+    <div class="center">
+      <div class="kicker">Browse</div>
+      <h2 class="h2">Space Gallery</h2>
+      <p class="sub">Click a tile to view full image.</p>
+    </div>
+    <div class="tiles reveal" id="spaceTiles">
+      <div class="tile" data-key="amphitheatre"><div class="tile-media"></div><div class="tile-title">Amphitheatre</div></div>
+      <div class="tile" data-key="photoStudio"><div class="tile-media"></div><div class="tile-title">Photography Studio</div></div>
+      <div class="tile" data-key="conferenceRoom"><div class="tile-media"></div><div class="tile-title">Conference Room</div></div>
+      <div class="tile" data-key="artStudio"><div class="tile-media"></div><div class="tile-title">Art Studio</div></div>
+      <div class="tile" data-key="gamesRoom"><div class="tile-media"></div><div class="tile-title">Games Room</div></div>
+      <div class="tile" data-key="markerStudio"><div class="tile-media"></div><div class="tile-title">Marker Studio</div></div>
+      <div class="tile" data-key="terrace"><div class="tile-media"></div><div class="tile-title">Terrace</div></div>
+      <div class="tile" data-key="greenRoom"><div class="tile-media"></div><div class="tile-title">Green Room</div></div>
+      <div class="tile" data-key="gallery"><div class="tile-media"></div><div class="tile-title">Gallery</div></div>
+    </div>
+  </div>
+</section>
 
   <!-- Closing Quote -->
   <section id="closing" class="section" data-image-key="closing">
@@ -314,7 +353,55 @@
     // --- Events ---
     window.addEventListener('scroll', parallax, { passive: true });
     window.addEventListener('resize', parallax);
-    window.addEventListener('load', () => { setBackgrounds(); parallax(); });
+    window.addEventListener('load', () => { setBackgrounds(); parallax(); initTiles(); initLightbox(); });
+// --- Lightbox + Tiles ---
+let LB = { root:null, img:null, caption:null, close:null, backdrop:null };
+
+function initTiles(){
+  const grid = document.getElementById('spaceTiles');
+  if(!grid) return;
+  grid.querySelectorAll('.tile').forEach(tile => {
+    const key = tile.getAttribute('data-key');
+    const titleEl = tile.querySelector('.tile-title');
+    const title = titleEl ? titleEl.textContent : '';
+    const media = tile.querySelector('.tile-media');
+    const url = driveToDirect(IMAGES[key]);
+    if (url && media) media.style.backgroundImage = `url("${url}")`;
+    tile.addEventListener('click', () => openLightbox(url, title));
+  });
+}
+
+function initLightbox(){
+  LB.root = document.getElementById('lightbox');
+  LB.img = document.getElementById('lightboxImg');
+  LB.caption = document.getElementById('lightboxCaption');
+  LB.close = document.getElementById('lightboxClose');
+  LB.backdrop = document.getElementById('lightboxBackdrop');
+  if (!LB.root) return;
+  const close = () => closeLightbox();
+  LB.close && LB.close.addEventListener('click', close);
+  LB.backdrop && LB.backdrop.addEventListener('click', close);
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+}
+
+function openLightbox(url, title){
+  if (!LB.root || !url) return;
+  const hi = url.replace(/sz=w\\d+/, 'sz=w4000');
+  const caption = title || '';
+  LB.img.setAttribute('src', hi);
+  LB.img.setAttribute('alt', caption);
+  LB.caption.textContent = caption; // caption = space name only
+  LB.root.setAttribute('aria-label', caption);
+  LB.root.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(){
+  if (!LB.root) return;
+  LB.root.classList.remove('is-open');
+  LB.img.setAttribute('src', '');
+  document.body.style.overflow = '';
+}
 
     // --- Smoke tests (console) ---
     (function tests(){
@@ -325,6 +412,22 @@
       expect(document.querySelectorAll('.section').length >= 13,'sections count ok');
       const resolved=driveToDirect(IMAGES.hero); expect(resolved.includes('drive.google.com/thumbnail')||resolved.startsWith('http'),'driveToDirect ok');
     })();
+    // additional gallery tests
+(function(){
+  const expect = (c,m)=>{ if(!c) console.error('SMOKE TEST:', m); };
+  const tiles = document.querySelectorAll('#spaceTiles .tile');
+  expect(tiles.length === 9,'space tiles should be 9');
+  const first = document.querySelector('#spaceTiles .tile');
+  if (first) {
+    const key = first.getAttribute('data-key');
+    const t = first.querySelector('.tile-title')?.textContent || '';
+    const url = driveToDirect(IMAGES[key]);
+    openLightbox(url, t);
+    expect(document.getElementById('lightboxCaption').textContent === t, 'lightbox caption equals space name');
+    closeLightbox();
+  }
+})();
+
   </script>
 </body>
 </html>
