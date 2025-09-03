@@ -48,7 +48,7 @@
     table.pricetable thead th{font-size:13px;color:rgba(255,255,255,.85)}
     table.pricetable tbody tr{background:rgba(255,255,255,.06);border:1px solid var(--border)}
     table.pricetable tbody tr td:first-child{font-weight:600}
-    /* Space Gallery */
+   /* Space Gallery */
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:20px}
 .tile{position:relative;border:1px solid var(--border);background:var(--card);border-radius:18px;overflow:hidden;cursor:pointer;transition:box-shadow .3s,border-color .3s,transform .2s}
 .tile:hover{box-shadow:0 0 24px rgba(255,106,0,.35);border-color:rgba(255,106,0,.6);transform:translateY(-2px)}
@@ -251,16 +251,18 @@
       <h2 class="h2">Space Gallery</h2>
       <p class="sub">Click a tile to view full image.</p>
     </div>
+
+    <!-- IMPORTANT: keys must match IMAGES object exactly -->
     <div class="tiles reveal" id="spaceTiles">
-      <div class="tile" data-key="amphitheatre"><div class="tile-media"></div><div class="tile-title">Amphitheatre</div></div>
+      <div class="tile" data-key="gallery"><div class="tile-media"></div><div class="tile-title">Gallery</div></div>
       <div class="tile" data-key="photoStudio"><div class="tile-media"></div><div class="tile-title">Photography Studio</div></div>
-      <div class="tile" data-key="conferenceRoom"><div class="tile-media"></div><div class="tile-title">Conference Room</div></div>
+      <div class="tile" data-key="meetingRoom"><div class="tile-media"></div><div class="tile-title">Meeting Room</div></div>
+      <div class="tile" data-key="amphitheatre"><div class="tile-media"></div><div class="tile-title">Amphitheatre</div></div>
       <div class="tile" data-key="artStudio"><div class="tile-media"></div><div class="tile-title">Art Studio</div></div>
-      <div class="tile" data-key="gamesRoom"><div class="tile-media"></div><div class="tile-title">Games Room</div></div>
-      <div class="tile" data-key="markerStudio"><div class="tile-media"></div><div class="tile-title">Marker Studio</div></div>
+      <div class="tile" data-key="gameRoom"><div class="tile-media"></div><div class="tile-title">Game Room</div></div>
+      <div class="tile" data-key="makersStudio"><div class="tile-media"></div><div class="tile-title">Makers Studio</div></div>
       <div class="tile" data-key="terrace"><div class="tile-media"></div><div class="tile-title">Terrace</div></div>
       <div class="tile" data-key="greenRoom"><div class="tile-media"></div><div class="tile-title">Green Room</div></div>
-      <div class="tile" data-key="gallery"><div class="tile-media"></div><div class="tile-title">Gallery</div></div>
     </div>
   </div>
 </section>
@@ -354,7 +356,7 @@
     window.addEventListener('scroll', parallax, { passive: true });
     window.addEventListener('resize', parallax);
     window.addEventListener('load', () => { setBackgrounds(); parallax(); initTiles(); initLightbox(); });
-// --- Lightbox + Tiles ---
+// Lightbox + Tiles
 let LB = { root:null, img:null, caption:null, close:null, backdrop:null };
 
 function initTiles(){
@@ -362,10 +364,9 @@ function initTiles(){
   if(!grid) return;
   grid.querySelectorAll('.tile').forEach(tile => {
     const key = tile.getAttribute('data-key');
-    const titleEl = tile.querySelector('.tile-title');
-    const title = titleEl ? titleEl.textContent : '';
+    const title = tile.querySelector('.tile-title')?.textContent || '';
     const media = tile.querySelector('.tile-media');
-    const url = driveToDirect(IMAGES[key]);
+    const url = driveToDirect(IMAGES[key]);           // uses your Drive converter
     if (url && media) media.style.backgroundImage = `url("${url}")`;
     tile.addEventListener('click', () => openLightbox(url, title));
   });
@@ -379,18 +380,19 @@ function initLightbox(){
   LB.backdrop = document.getElementById('lightboxBackdrop');
   if (!LB.root) return;
   const close = () => closeLightbox();
-  LB.close && LB.close.addEventListener('click', close);
-  LB.backdrop && LB.backdrop.addEventListener('click', close);
+  LB.close?.addEventListener('click', close);
+  LB.backdrop?.addEventListener('click', close);
   window.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
 }
 
 function openLightbox(url, title){
   if (!LB.root || !url) return;
-  const hi = url.replace(/sz=w\\d+/, 'sz=w4000');
+  // bump Drive thumbnail size up for crisper full image
+  const hi = url.replace(/(\\?|&)sz=w\\d+/,'$1sz=w4000').replace(/\\?$/,'?sz=w4000');
   const caption = title || '';
   LB.img.setAttribute('src', hi);
   LB.img.setAttribute('alt', caption);
-  LB.caption.textContent = caption; // caption = space name only
+  LB.caption.textContent = caption; // caption = space name
   LB.root.setAttribute('aria-label', caption);
   LB.root.classList.add('is-open');
   document.body.style.overflow = 'hidden';
@@ -429,5 +431,13 @@ function closeLightbox(){
 })();
 
   </script>
+  <!-- Lightbox -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <div class="lightbox-backdrop" id="lightboxBackdrop"></div>
+  <img id="lightboxImg" alt="Space image" />
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close">✕</button>
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
 </body>
 </html>
